@@ -1,0 +1,24 @@
+{
+  "name": "prashantgamatex_server",
+  "version": "0.0.1",
+  "description": "Backend For Prashant Gamatex Cross Platform Application",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "npx tsc",
+    "start": "node dist/index.js",
+    "dev": "node --watch dist/index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@prisma/client": "^5.15.0",
+    "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.14.2",
+    "prisma": "^5.15.0",
+    "typescript": "^5.4.5"
+  }
+}
