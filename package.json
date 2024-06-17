@@ -8,7 +8,9 @@
     "build": "npx tsc",
     "build:dev": "npx tsc --watch",
     "start": "node --env-file=.env dist/index.js",
-    "dev": "node --env-file=.env --watch dist/index.js"
+    "dev": "node --env-file=.env --watch dist/index.js",
+    "deploy": "pm2 start ecosystem.config.js",
+    "undeploy": "pm2 stop ecosystem.config.js"
   },
   "author": "",
   "license": "ISC",
