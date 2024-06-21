@@ -2,13 +2,14 @@ import { Request, Response, NextFunction } from "express";
 import { getKnexInstance } from "../db";
 
 export const setDatabaseConnection = (
-  req: any,
-  res: any,
+  req: Request,
+  res: Response,
   next: NextFunction
 ) => {
-  const userCompany = req.body.company;
+  const userCompany = (req as any).user.company;
+  console.log("SET DB", req);
   try {
-    req.knex = getKnexInstance(userCompany);
+    (req as any).knex = getKnexInstance(userCompany);
     next();
   } catch (error) {
     next(error);

@@ -1,6 +1,7 @@
 import express, { Express, Request, Response } from "express";
 import cors from "cors";
 import authRouter from "./routes/authRouter";
+import userRouter from "./routes/userRouter";
 
 const app: Express = express();
 const port = process.env.PORT || 3000;
@@ -11,6 +12,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // routes
 app.use("/auth", authRouter);
+app.use("/user", userRouter);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Express + TS Server Prasad Group");

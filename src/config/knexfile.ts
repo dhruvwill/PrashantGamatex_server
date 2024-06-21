@@ -39,13 +39,13 @@ export default {
       tableName: "knex_migrations",
     },
   },
-  serber: {
+  ferber: {
     client: "mssql",
     connection: {
       server: "localhost",
       user: "developer",
       password: "prasadgroup",
-      database: "SerberTest",
+      database: "FerberTest",
       options: {
         trustedConnection: true,
         trustServerCertificate: true,
