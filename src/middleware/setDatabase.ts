@@ -6,8 +6,7 @@ export const setDatabaseConnection = (
   res: Response,
   next: NextFunction
 ) => {
-  const userCompany = (req as any).user.company;
-  console.log("SET DB", req);
+  const userCompany = (req as any).body.user.company;
   try {
     (req as any).knex = getKnexInstance(userCompany);
     next();

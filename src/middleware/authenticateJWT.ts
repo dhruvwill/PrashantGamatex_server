@@ -6,8 +6,6 @@ const secret: string = process.env.JWT_SECRET!;
 const authenticateJWT = (req: Request, res: Response, next: NextFunction) => {
   const authHeader = req.headers.authorization;
 
-  console.log("Authenticate JWT", req);
-
   if (authHeader) {
     const token = authHeader.split(" ")[1];
 
@@ -17,7 +15,7 @@ const authenticateJWT = (req: Request, res: Response, next: NextFunction) => {
       }
 
       // Attach user to request object
-      (req as any).user = user;
+      (req as any).body.user = user;
       next();
     });
   } else {

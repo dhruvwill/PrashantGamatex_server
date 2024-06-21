@@ -6,7 +6,6 @@ const authRouter = Router();
 const secret: string = process.env.JWT_SECRET!;
 
 authRouter.post("/login", setDatabaseConnection, async (req: any, res: any) => {
-  console.log(req.body);
   try {
     const data = await req
       .knex("dbo.UserMaster")
@@ -15,12 +14,12 @@ authRouter.post("/login", setDatabaseConnection, async (req: any, res: any) => {
         username: "UserIdentification",
         name: "Description",
       })
-      .where("UserIdentification", req.body.username)
-      .andWhere("Password", req.body.password);
+      .where("UserIdentification", req.body.user.username)
+      .andWhere("Password", req.body.user.password);
     if (data.length > 0) {
       const payload = {
         ...data[0],
-        company: req.body.company,
+        company: req.body.user.company,
       };
       const token = sign(payload, secret, { expiresIn: "1h" });
       res.status(200).json({ payload, token });
