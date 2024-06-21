@@ -27,7 +27,7 @@ authRouter.post("/login", setDatabaseConnection, async (req: any, res: any) => {
       res.status(401).json({ error: "Invalid Username or Password" });
     }
   } catch (error: any) {
-    res.status(500).json({ error: "Some Error Occured" });
+    res.status(500).json({ error: "Some Error Occurred" });
   }
 });
 

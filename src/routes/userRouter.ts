@@ -9,23 +9,79 @@ userRouter.post(
   authenticateJWT,
   setDatabaseConnection,
   async (req: Request, res: Response) => {
-    // const user = (req as any).user;
-
-    // // Now you can use the authenticated user's data
-    // console.log(user);
-
-    // // Example query
-    // try {
-    //   const result = await (req as any).knex("dbo.SomeTable").insert({
-    //     userId: user.uid,
-    //     company: user.company,
-    //     // other data from req.body
-    //   });
-    //   res.status(200).json({ success: true, result });
-    // } catch (error) {
-    //   res.status(500).json({ error: "Some Error Occurred" });
-    // }
-    res.status(200).json({ success: true });
+    try {
+      const mode = 'INSERT';
+      const querydata = req.body;
+      const params = {
+        CompanyName : querydata.user.company,
+        FormId : "2361",
+        CategoryId : "400",
+        ScreenName : "Lead",
+        UserId : "1",
+        UDF_CompanyName_2361: querydata.customerCompanyName,
+        UDF_ContactPerson_2361: querydata.contactPerson,
+        UDF_Designation_2361: querydata.designation,
+        UDF_MobileNo_2361: querydata.mobileNo,
+        UDF_EmailId_2361: querydata.emailId,
+        UDF_Product_2361: querydata.product,
+        UDF_LeadSource_2361: querydata.leadSource,
+        UDF_CompetitionWith_2361: querydata.competition,
+        UDF_TimeFrame_2361: querydata.timeFrame,
+        UDF_LeadRemindDate_2361: querydata.leadRemindDate,
+        UDF_CustomerApplication_2361: querydata.customerApplication,
+        UDF_CustomerExistingMachine_2361: querydata.customerExistingMachine,
+        UDF_LeadNotes_2361: querydata.leadNote,
+        output: 0
+      };
+      const data = await (req as any).knex.raw(`
+        EXEC [dbo].[RefrenceTransactionDetailsInsertSP_2361]
+          @Mode = ?, 
+          @CompanyName = ?,
+          @FormId = ?,
+          @CategoryId = ?,
+          @ScreenName = ?,
+          @UserId = ?,
+          @UDF_CompanyName_2361 = ?, 
+          @UDF_ContactPerson_2361 = ?, 
+          @UDF_Designation_2361 = ?, 
+          @UDF_MobileNo_2361 = ?, 
+          @UDF_EmailId_2361 = ?, 
+          @UDF_Product_2361 = ?, 
+          @UDF_LeadSource_2361 = ?, 
+          @UDF_CompetitionWith_2361 = ?, 
+          @UDF_TimeFrame_2361 = ?, 
+          @UDF_LeadRemindDate_2361 = ?, 
+          @UDF_CustomerApplication_2361 = ?, 
+          @UDF_CustomerExistingMachine_2361 = ?, 
+          @UDF_LeadNotes_2361 = ?,
+          @Output = ? OUT
+      `, [
+        mode,
+        params.CompanyName,
+        params.FormId,
+        params.CategoryId,
+        params.ScreenName,
+        params.UserId,
+        params.UDF_CompanyName_2361,
+        params.UDF_ContactPerson_2361,
+        params.UDF_Designation_2361,
+        params.UDF_MobileNo_2361,
+        params.UDF_EmailId_2361,
+        params.UDF_Product_2361,
+        params.UDF_LeadSource_2361,
+        params.UDF_CompetitionWith_2361,
+        params.UDF_TimeFrame_2361,
+        params.UDF_LeadRemindDate_2361,
+        params.UDF_CustomerApplication_2361,
+        params.UDF_CustomerExistingMachine_2361,
+        params.UDF_LeadNotes_2361,
+        params.output
+      ])
+      res.json(data)
+    }
+    catch (err) {
+      console.log(err)
+    }
   }
 );
 
