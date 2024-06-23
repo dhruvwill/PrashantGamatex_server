@@ -1,6 +1,7 @@
 import { Router, Request, Response } from "express";
 import { setDatabaseConnection } from "../middleware/setDatabase";
 import { authenticateJWT } from "../middleware/authenticateJWT";
+import { leadinsertquery, getuserIdCategoryIdquery } from "../Queries/lead";
 
 const userRouter = Router();
 
@@ -10,14 +11,17 @@ userRouter.post(
   setDatabaseConnection,
   async (req: Request, res: Response) => {
     try {
-      const mode = 'INSERT';
       const querydata = req.body;
+      const userId_categoryId_data = await (req as any).knex.raw(getuserIdCategoryIdquery, [2361,querydata.category,querydata.user.uid]);
+      const categoryID = userId_categoryId_data[0].CategoryID;
+      const userID = userId_categoryId_data[0].UserID;
+      const mode = 'INSERT';
       const params = {
         CompanyName : querydata.user.company,
         FormId : "2361",
-        CategoryId : "400",
-        ScreenName : "Lead",
-        UserId : "1",
+        CategoryId : categoryID,
+        ScreenName : "Lead Screen",
+        UserId : userID,
         UDF_CompanyName_2361: querydata.customerCompanyName,
         UDF_ContactPerson_2361: querydata.contactPerson,
         UDF_Designation_2361: querydata.designation,
@@ -33,29 +37,8 @@ userRouter.post(
         UDF_LeadNotes_2361: querydata.leadNote,
         output: 0
       };
-      const data = await (req as any).knex.raw(`
-        EXEC [dbo].[RefrenceTransactionDetailsInsertSP_2361]
-          @Mode = ?, 
-          @CompanyName = ?,
-          @FormId = ?,
-          @CategoryId = ?,
-          @ScreenName = ?,
-          @UserId = ?,
-          @UDF_CompanyName_2361 = ?, 
-          @UDF_ContactPerson_2361 = ?, 
-          @UDF_Designation_2361 = ?, 
-          @UDF_MobileNo_2361 = ?, 
-          @UDF_EmailId_2361 = ?, 
-          @UDF_Product_2361 = ?, 
-          @UDF_LeadSource_2361 = ?, 
-          @UDF_CompetitionWith_2361 = ?, 
-          @UDF_TimeFrame_2361 = ?, 
-          @UDF_LeadRemindDate_2361 = ?, 
-          @UDF_CustomerApplication_2361 = ?, 
-          @UDF_CustomerExistingMachine_2361 = ?, 
-          @UDF_LeadNotes_2361 = ?,
-          @Output = ? OUT
-      `, [
+      console.log(params)
+      const data = await (req as any).knex.raw(leadinsertquery, [
         mode,
         params.CompanyName,
         params.FormId,
