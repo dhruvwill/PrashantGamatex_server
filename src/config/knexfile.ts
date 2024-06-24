@@ -5,8 +5,8 @@ export default {
     connection: {
       server: "localhost",
       user: "developer",
-      password: "123456",
-      database: "PrashantTestdb",
+      password: "prasadgroup",
+      database: "PGPLCRM",
       options: {
         trustedConnection: true,
         trustServerCertificate: true,
@@ -44,7 +44,7 @@ export default {
     connection: {
       server: "localhost",
       user: "developer",
-      password: "123456",
+      password: "prasadgroup",
       database: "FerberTest",
       options: {
         trustedConnection: true,
@@ -64,7 +64,7 @@ export default {
     connection: {
       server: "localhost",
       user: "developer",
-      password: "123456",
+      password: "prasadgroup",
       database: "WestPointTest",
       options: {
         trustedConnection: true,

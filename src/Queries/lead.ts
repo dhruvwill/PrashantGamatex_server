@@ -1,4 +1,5 @@
 export const leadinsertquery = `
+        DECLARE @Output INT;
         EXEC [dbo].[RefrenceTransactionDetailsInsertSP_2361]
           @Mode = ?, 
           @CompanyName = ?,
@@ -19,8 +20,9 @@ export const leadinsertquery = `
           @UDF_CustomerApplication_2361 = ?, 
           @UDF_CustomerExistingMachine_2361 = ?, 
           @UDF_LeadNotes_2361 = ?,
-          @Output = ? OUT
-      `
+          @Output = @Output OUTPUT;
+        SELECT @Output AS Output;
+      `;
 
 export const getuserIdCategoryIdquery = `
         DECLARE @CategoryID INT;
@@ -32,4 +34,4 @@ export const getuserIdCategoryIdquery = `
           @UserCode = ?;
   
         SELECT @CategoryID AS CategoryID, @UserID AS UserID;
-      `
+      `;
