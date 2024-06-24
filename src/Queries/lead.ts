@@ -35,3 +35,8 @@ export const getuserIdCategoryIdquery = `
   
         SELECT @CategoryID AS CategoryID, @UserID AS UserID;
       `;
+
+export const getleads = `
+        EXEC [dbo].[ReferenceTransactionGetDetails_2361]
+        @UserCode = ?
+      `

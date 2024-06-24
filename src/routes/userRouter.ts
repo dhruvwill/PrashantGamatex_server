@@ -1,8 +1,7 @@
 import { Router, Request, Response } from "express";
 import { setDatabaseConnection } from "../middleware/setDatabase";
 import { authenticateJWT } from "../middleware/authenticateJWT";
-import { leadinsertquery, getuserIdCategoryIdquery } from "../queries/lead";
-import { time } from "console";
+import { leadinsertquery, getuserIdCategoryIdquery, getleads } from "../queries/lead";
 
 const userRouter = Router();
 
@@ -11,41 +10,10 @@ userRouter.get(
   authenticateJWT,
   setDatabaseConnection,
   async (req: Request, res: Response) => {
-    res.send([
-      {
-        leadId: 1,
-        leadName: "Lead 1",
-        leadStatus: "Open",
-        leadOwner: "User 1",
-        leadSource: "Source 1",
-        companyName: "Company 1",
-        productList: ["Product 1", "Product 2"],
-        timeFrame: "1-2 months",
-        userCode: req.body.user.UserCode,
-      },
-      {
-        leadId: 2,
-        leadName: "Lead 2",
-        leadStatus: "Open",
-        leadOwner: "User 2",
-        leadSource: "Source 2",
-        companyName: "Company 2",
-        productList: ["Product 1", "Product 2"],
-        timeFrame: "2-3 months",
-        userCode: req.body.user.UserCode,
-      },
-      {
-        leadId: 3,
-        leadName: "Lead 3",
-        leadStatus: "Open",
-        leadOwner: "User 3",
-        leadSource: "Source 3",
-        companyName: "Company 3",
-        productList: ["Product 1", "Product 2"],
-        timeFrame: "3-4 months",
-        userCode: req.body.user.UserCode,
-      },
-    ]);
+    const data = await (req as any).knex.raw(  
+    getleads
+    ,[req.body.user.uid])
+    res.json(data)
   }
 );
 userRouter.post(
@@ -106,7 +74,7 @@ userRouter.post(
       if (data[0].Output == 0) {
         throw new Error("Error while inserting lead, Please Try again");
       }
-      res.json(data);
+      res.status(200).json(data);
     } catch (err: any) {
       res.status(500).json({ error: err.message });
     }
