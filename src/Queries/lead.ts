@@ -52,11 +52,11 @@ export const leadupdatequery = `
           @UDF_LeadNotes_2361 = ?,
           @Output = @Output OUTPUT;
         SELECT @Output AS Output;
-      `
+      `;
 
 export const getuserIdCategoryIdquery = `
         
-        EXEC [dbo].[ReferenceTransactionGetUserIdCategoryId_2361]
+        EXEC [dbo].[CRM_ReferenceTransactionGetUserIdCategoryId_2361]
           @ApplicableFormId = ?, 
           @CategoryName = ?, 
           @UserCode = ?,
@@ -67,7 +67,7 @@ export const getuserIdCategoryIdquery = `
 export const getleads = `
         EXEC [dbo].[CRM_ReferenceTransactionGetDetails_2361]
         @UserCode = ?
-      `
+      `;
 
 export const constantsquery = `
         EXEC [dbo].[CRM_ConstantsGetValues]
@@ -75,4 +75,4 @@ export const constantsquery = `
 	        @TimeFrame = ?,
 	        @Currency = ?,
 	        @Category = ?
-`
+`;
