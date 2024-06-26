@@ -1,6 +1,6 @@
 export const leadinsertquery = `
         DECLARE @Output INT;
-        EXEC [dbo].[RefrenceTransactionDetailsInsertUpdateSP_2361]
+        EXEC [dbo].[CRM_RefrenceTransactionDetailsInsertUpdateSP_2361]
           @Mode = ?, 
           @CompanyName = ?,
           @FormId = ?,
@@ -28,7 +28,7 @@ export const leadinsertquery = `
 
 export const leadupdatequery = `
         DECLARE @Output INT;
-        EXEC [dbo].[RefrenceTransactionDetailsInsertUpdateSP_2361]
+        EXEC [dbo].[CRM_RefrenceTransactionDetailsInsertUpdateSP_2361]
           @Mode = ?, 
           @CompanyName = ?,
           @FormId = ?,
@@ -65,7 +65,7 @@ export const getuserIdCategoryIdquery = `
       `;
 
 export const getleads = `
-        EXEC [dbo].[ReferenceTransactionGetDetails_2361]
+        EXEC [dbo].[CRM_ReferenceTransactionGetDetails_2361]
         @UserCode = ?
       `
 

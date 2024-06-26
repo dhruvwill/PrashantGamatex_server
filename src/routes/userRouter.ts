@@ -24,12 +24,13 @@ userRouter.patch(
   async(req:Request,res:Response)=>{
   try {
     const querydata = req.body;
-    const userId_categoryId_data = await (req as any).knex.raw(
+    const userId_categoryId_currencyId_data = await (req as any).knex.raw(
       getuserIdCategoryIdquery,
-      [2361, querydata.category, querydata.user.uid]
+      [2361, querydata.category, querydata.user.uid,querydata.currency]
     );
-    const categoryID = userId_categoryId_data[0].CategoryID;
-    const userID = userId_categoryId_data[0].UserID;
+    const categoryID = userId_categoryId_currencyId_data[0].CategoryID;
+    const userID = userId_categoryId_currencyId_data[0].UserID;
+    const currencyID = userId_categoryId_currencyId_data[0].CurrencyID;
     const mode = "UPDATE";
     const params = {
       CompanyName: querydata.user.company,
@@ -37,7 +38,8 @@ userRouter.patch(
       CategoryId: categoryID,
       ScreenName: "Lead Screen",
       UserId: userID,
-      RecordId: querydata.ReferenceTransaction_2361Id,
+      CurrencyID: currencyID,
+      RecordId: querydata.RecordId,
       UDF_CompanyName_2361: querydata.customerCompanyName,
       UDF_ContactPerson_2361: querydata.contactPerson,
       UDF_Designation_2361: querydata.designation,
@@ -53,32 +55,33 @@ userRouter.patch(
       UDF_LeadNotes_2361: querydata.leadNote,
     };
     console.log(params)
-    // const data = await (req as any).knex.raw(leadinsertquery, [
-    //   mode,
-    //   params.CompanyName,
-    //   params.FormId,
-    //   params.CategoryId,
-    //   params.ScreenName,
-    //   params.UserId,
-    //   params.RecordId,
-    //   params.UDF_CompanyName_2361,
-    //   params.UDF_ContactPerson_2361,
-    //   params.UDF_Designation_2361,
-    //   params.UDF_MobileNo_2361,
-    //   params.UDF_EmailId_2361,
-    //   params.UDF_Product_2361,
-    //   params.UDF_LeadSource_2361,
-    //   params.UDF_CompetitionWith_2361,
-    //   params.UDF_TimeFrame_2361,
-    //   params.UDF_LeadRemindDate_2361,
-    //   params.UDF_CustomerApplication_2361,
-    //   params.UDF_CustomerExistingMachine_2361,
-    //   params.UDF_LeadNotes_2361,
-    // ])
-    // if (data[0].Output == 0) {
-    //   throw new Error("Error while updating lead, Please Try again");
-    // }
-    // res.status(200).json(data);
+    const data = await (req as any).knex.raw(leadinsertquery, [
+      mode,
+      params.CompanyName,
+      params.FormId,
+      params.CategoryId,
+      params.ScreenName,
+      params.UserId,
+      params.RecordId,
+      params.CurrencyID,
+      params.UDF_CompanyName_2361,
+      params.UDF_ContactPerson_2361,
+      params.UDF_Designation_2361,
+      params.UDF_MobileNo_2361,
+      params.UDF_EmailId_2361,
+      params.UDF_Product_2361,
+      params.UDF_LeadSource_2361,
+      params.UDF_CompetitionWith_2361,
+      params.UDF_TimeFrame_2361,
+      params.UDF_LeadRemindDate_2361,
+      params.UDF_CustomerApplication_2361,
+      params.UDF_CustomerExistingMachine_2361,
+      params.UDF_LeadNotes_2361,
+    ])
+    if (data[0].Output == 0) {
+      throw new Error("Error while updating lead, Please Try again");
+    }
+    res.status(200).json(data);
   }catch(err:any){
     res.status(500).json({ error: err.message });
   }
