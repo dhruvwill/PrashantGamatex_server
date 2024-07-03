@@ -69,6 +69,17 @@ export const getleads = `
         @UserCode = ?
       `;
 
+
+export const getfollowupinquiry = `
+        EXEC [dbo].[CRM_SalesFollowupInquiryGetDetails]
+        @UserCode = ?
+      `
+
+export const getfollowupquotation = `
+        EXEC [dbo].[CRM_SalesFollowupQuotationGetDetails]
+        @UserCode = ?
+      `
+
 export const constantsquery = `
         EXEC [dbo].[CRM_ConstantsGetValues]
           @LeadSource = ?, 

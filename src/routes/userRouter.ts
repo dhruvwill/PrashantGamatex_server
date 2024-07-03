@@ -5,6 +5,8 @@ import {
   leadinsertquery,
   getuserIdCategoryIdquery,
   getleads,
+  getfollowupinquiry,
+  getfollowupquotation
 } from "../queries/lead";
 
 const userRouter = Router();
@@ -161,5 +163,24 @@ userRouter.post(
     }
   }
 );
+
+
+userRouter.get(
+  "/followup/inquiry/get",
+  authenticateJWT,
+  setDatabaseConnection,
+  async (req: Request, res: Response) => {
+    const data = await (req as any).knex.raw(getfollowupinquiry, [req.body.user.uid]);
+    res.json(data);
+  })
+
+userRouter.get(
+  "/followup/quotation/get",
+  authenticateJWT,
+  setDatabaseConnection,
+  async (req: Request, res: Response) => {
+    const data = await (req as any).knex.raw(getfollowupquotation, [req.body.user.uid]);
+    res.json(data);
+  })
 
 export default userRouter;

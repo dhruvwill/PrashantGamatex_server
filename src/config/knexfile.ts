@@ -4,8 +4,8 @@ export default {
     client: "mssql",
     connection: {
       server: "localhost",
-      user: "developer",
-      password: "prasadgroup",
+      user: "CRM",
+      password: "",
       database: "PGPLCRM",
       options: {
         trustedConnection: true,
@@ -43,8 +43,8 @@ export default {
     client: "mssql",
     connection: {
       server: "localhost",
-      user: "developer",
-      password: "prasadgroup",
+      user: "CRM",
+      password: "",
       database: "FerberTest",
       options: {
         trustedConnection: true,
@@ -63,8 +63,8 @@ export default {
     client: "mssql",
     connection: {
       server: "localhost",
-      user: "developer",
-      password: "prasadgroup",
+      user: "CRM",
+      password: "",
       database: "WestPointTest",
       options: {
         trustedConnection: true,
