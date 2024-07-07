@@ -10,7 +10,8 @@ import {
   getfollowupinquiry,
   getfollowupquotation,
   followupinquiryinsertquery,
-  followupquotationinsertquery
+  followupquotationinsertquery,
+  getUseridCategoryidfollowup
 } from "../queries/followup";
 
 const userRouter = Router();
@@ -192,10 +193,19 @@ userRouter.get(
     async(req: Request, res: Response) => {
       try {
         const querydata = req.body;
+        const userId_categoryId = await (req as any).knex.raw(
+          getUseridCategoryidfollowup,
+          [2361, querydata.category, querydata.user.uid, querydata.currency]
+        );
+        const categoryID = userId_categoryId[0].CategoryId;
+        const userID = userId_categoryId[0].Userid;
         const mode = "INSERT";
         const params = {
           SalesInquiryId: querydata.SalesInquiryId,
           SalesInquiryDetailsId: querydata.SalesInquiryDetailsId,
+          CategoryId: categoryID,
+          UserId: userID,
+          DocumentNo: querydata.DocumentNo,
           FollowupDateTime : querydata.FollowupDateTime,
           FollowupEndDateTime : querydata.FollowupEndDateTime,
           FollowupDetails: querydata.FollowupDetails,
@@ -216,6 +226,9 @@ userRouter.get(
           mode,
           params.SalesInquiryId,
           params.SalesInquiryDetailsId,
+          params.CategoryId,
+          params.UserId,
+          params.DocumentNo,
           params.FollowupDateTime,
           params.FollowupEndDateTime,
           params.FollowupDetails,
@@ -250,9 +263,18 @@ userRouter.get(
       try {
         const querydata = req.body;
         const mode = "INSERT";
+        const userId_categoryId = await (req as any).knex.raw(
+          getUseridCategoryidfollowup,
+          [2361, querydata.category, querydata.user.uid,]
+        );
+        const categoryID = userId_categoryId[0].CategoryId;
+        const userID = userId_categoryId[0].Userid;
         const params = {
           SalesQuotationId: querydata.SalesQuotationId,
           SalesQuotationDetailsId: querydata.SalesQuotationDetailsId,
+          CategoryId: categoryID,
+          UserId: userID,
+          DocumentNo: querydata.DocumentNo,
           FollowupDateTime : querydata.FollowupDateTime,
           FollowupEndDateTime : querydata.FollowupEndDateTime,
           FollowupDetails: querydata.FollowupDetails,
@@ -273,6 +295,9 @@ userRouter.get(
           mode,
           params.SalesQuotationId,
           params.SalesQuotationDetailsId,
+          params.CategoryId,
+          params.UserId,
+          params.DocumentNo,
           params.FollowupDateTime,
           params.FollowupEndDateTime,
           params.FollowupDetails,
