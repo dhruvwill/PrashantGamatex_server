@@ -200,7 +200,7 @@ userRouter.post(
       const querydata = req.body;
       const userId_categoryId = await (req as any).knex.raw(
         getUseridCategoryidfollowup,
-        [206, querydata.category, querydata.user.uid]
+        [208, querydata.category, querydata.user.uid]
       );
       const categoryID = userId_categoryId[0].CategoryId;
       const userID = userId_categoryId[1].Userid;
@@ -274,7 +274,7 @@ userRouter.post(
         [208, querydata.category, querydata.user.uid]
       );
       const categoryID = userId_categoryId[0].CategoryId;
-      const userID = userId_categoryId[0].Userid;
+      const userID = userId_categoryId[1].Userid;
       const params = {
         SalesQuotationId: querydata.SalesQuotationId,
         SalesQuotationDetailsId: querydata.SalesQuotationDetailsId,
@@ -297,6 +297,7 @@ userRouter.post(
         ModeofContact: querydata.ModeofContact,
         FollowupStatus: querydata.FollowupStatus,
       };
+      console.log(params);
       const data = await (req as any).knex.raw(followupquotationinsertquery, [
         mode,
         params.SalesQuotationId,

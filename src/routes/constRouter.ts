@@ -17,7 +17,8 @@ constRouter.get("/get",authenticateJWT,setDatabaseConnection,async (req: Request
         params.LeadSource,
         params.TimeFrame,
         params.Currency,
-        params.Category
+        params.Category,
+        req.body.user.uid
     ])
         res.json(data)
     }catch(err:any){
@@ -27,7 +28,7 @@ constRouter.get("/get",authenticateJWT,setDatabaseConnection,async (req: Request
 
 constRouter.get("/get/documentno/followup",authenticateJWT,setDatabaseConnection,async (req: Request, res: Response) => {
     try{
-        const data = await (req as any).knex.raw(getdocumentnofollowupquery,[req.query.CategoryId,req.query.DocumentNo])
+        const data = await (req as any).knex.raw(getdocumentnofollowupquery,[req.body.CategoryName,0])
         res.status(200).json(data)
     }catch(err:any){
         res.status(500).json({message:err.message})
@@ -36,7 +37,7 @@ constRouter.get("/get/documentno/followup",authenticateJWT,setDatabaseConnection
 
 constRouter.get("/get/documentno/lead",authenticateJWT,setDatabaseConnection,async (req: Request, res: Response) => {
     try{
-        const data = await (req as any).knex.raw(getdocumentnoleadquery,[req.query.CategoryId,req.query.DocumentNo])
+        const data = await (req as any).knex.raw(getdocumentnoleadquery,[req.body.CategoryName,0])
         res.status(200).json(data)
     }catch(err:any){
         res.status(500).json({message:err.message})
