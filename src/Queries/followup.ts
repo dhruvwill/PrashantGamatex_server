@@ -1,22 +1,22 @@
 export const getfollowupinquiry = `
         EXEC [dbo].[CRM_SalesFollowupInquiryGetDetails]
         @UserCode = ?
-      `
+      `;
 
 export const getfollowupquotation = `
         EXEC [dbo].[CRM_SalesFollowupQuotationGetDetails]
         @UserCode = ?
-      `
+      `;
 
 export const getUseridCategoryidfollowup = `
         EXEC [dbo].[CRM_SalesFollowupGetUseridCategoryid]
-	@ApplicableFormId = ?
+	@ApplicableFormId = ?,
 	@CategoryName = ?,
-        @Usercode = ?,
-`
+        @Usercode = ?
+`;
 
 export const followupinquiryinsertquery = `
-        DECLARE Output INT;
+        DECLARE @Output int;
         EXEC [dbo].[CRM_SalesFollowupInquiryDetailsInsert]
             @Mode = ?,
             @SalesInquiryId = ?,
@@ -24,6 +24,7 @@ export const followupinquiryinsertquery = `
             @CategoryId = ?,
 	    @UserMasterId = ?,
 	    @DocumentNo = ?,
+            @DocumentDate=?,
             @FollowupDateTime = ?,
             @FollowupEndDateTime = ?,
             @FollowupDetails = ?,
@@ -42,9 +43,9 @@ export const followupinquiryinsertquery = `
             @Output = @Output OUTPUT
             
         SELECT @Output AS Output;
-`
+`;
 export const followupquotationinsertquery = `
-        DECLARE Output INT;
+        DECLARE @Output int;
         EXEC [dbo].[CRM_SalesFollowupQuotationDetailsInsert]
             @Mode = ?,
             @SalesQuotationId = ?,
@@ -52,6 +53,7 @@ export const followupquotationinsertquery = `
             @CategoryId = ?,
 	    @UserMasterId = ?,
 	    @DocumentNo = ?,
+            @DocumentDate=?,
             @FollowupDateTime = ?,
             @FollowupEndDateTime = ?,
             @FollowupDetails = ?,
@@ -70,4 +72,4 @@ export const followupquotationinsertquery = `
             @Output = @Output OUTPUT
             
         SELECT @Output AS Output;
-`
+`;

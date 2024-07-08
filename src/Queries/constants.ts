@@ -3,16 +3,22 @@ export const constantsquery = `
           @LeadSource = ?, 
 	        @TimeFrame = ?,
 	        @Currency = ?,
-	        @Category = ?
+	        @Category = ?,
+                @Usercode=?
 `;
 
 export const getdocumentnofollowupquery = `
         EXEC [dbo].[CRM_FetchDocumentNo_SalesFollowup]
-            @CategoryId =?,
+            @CategoryName =?,
 	        @DocumentNo =?
-        `   
+        `;
 export const getdocumentnoleadquery = `
-        EXEC [dbo].[CRM_FetchDocumentNo_SalesFollowup]
-            @CategoryId =?,
-	        @DocumentNo =?
-        `   
+        EXEC [dbo].[CRM_FetchDocumentNo_ReferenceTransaction_2361]
+            @CategoryName = ?,
+	    @DocumentNo = ?
+        `;
+
+export const getcategoryfollowup = `
+        EXEC [dbo].[CRM_SalesFollowupFetchCategoryValues]
+                @UserCode = ?
+`;

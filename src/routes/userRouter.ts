@@ -11,7 +11,7 @@ import {
   getfollowupquotation,
   followupinquiryinsertquery,
   followupquotationinsertquery,
-  getUseridCategoryidfollowup
+  getUseridCategoryidfollowup,
 } from "../queries/followup";
 
 const userRouter = Router();
@@ -63,7 +63,6 @@ userRouter.patch(
         UDF_CustomerExistingMachine_2361: querydata.customerExistingMachine,
         UDF_LeadNotes_2361: querydata.leadNote,
       };
-      console.log(params);
       const data = await (req as any).knex.raw(leadinsertquery, [
         mode,
         params.CompanyName,
@@ -103,7 +102,6 @@ userRouter.post(
   async (req: Request, res: Response) => {
     try {
       const querydata = req.body;
-      console.log(querydata);
       const userId_categoryId_currencyId_data = await (req as any).knex.raw(
         getuserIdCategoryIdquery,
         [2361, querydata.category, querydata.user.uid, querydata.currency]
@@ -162,7 +160,7 @@ userRouter.post(
       }
       res.status(200).json(data);
     } catch (err: any) {
-      res.status(500).json({ error: "An unexpected Error Occured" });
+      res.status(500).json({ error: err.message });
     }
   }
 );
@@ -200,7 +198,7 @@ userRouter.post(
       const querydata = req.body;
       const userId_categoryId = await (req as any).knex.raw(
         getUseridCategoryidfollowup,
-        [208, querydata.category, querydata.user.uid]
+        [208, querydata.CategoryName, querydata.user.uid]
       );
       const categoryID = userId_categoryId[0].CategoryId;
       const userID = userId_categoryId[1].Userid;
@@ -212,23 +210,23 @@ userRouter.post(
         CategoryId: categoryID,
         UserId: userID,
         DocumentNo: querydata.DocumentNo,
+        DocumentDate: querydata.DocumentDate,
         FollowupDateTime: querydata.FollowupDateTime,
         FollowupEndDateTime: querydata.FollowupEndDateTime,
         FollowupDetails: querydata.FollowupDetails,
-        Visitto: querydata.Visitto,
+        Visitto: querydata.VisitTo,
         VisitorPerson: querydata.VisitorPerson,
         NextVisitDateTime: querydata.NextVisitDateTime,
         NextVisitPerson: querydata.NextVisitPerson,
         NextVisitorPerson: querydata.NextVisitorPerson,
-        AttentionDetail: querydata.AttentionDetail,
+        AttentionDetail: querydata.AttentionDetails,
         OrderGoesParty: querydata.OrderGoesParty,
         CloseReason: querydata.CloseReason,
         DetailDescription: querydata.DetailDescription,
         Rating: querydata.Rating,
-        ModeofContact: querydata.ModeofContact,
+        ModeofContact: querydata.ModeOfContact,
         FollowupStatus: querydata.FollowupStatus,
       };
-      console.log(params);
       const data = await (req as any).knex.raw(followupinquiryinsertquery, [
         params.Mode,
         params.SalesInquiryId,
@@ -236,6 +234,7 @@ userRouter.post(
         params.CategoryId,
         params.UserId,
         params.DocumentNo,
+        params.DocumentDate,
         params.FollowupDateTime,
         params.FollowupEndDateTime,
         params.FollowupDetails,
@@ -252,15 +251,17 @@ userRouter.post(
         params.ModeofContact,
         params.FollowupStatus,
       ]);
-      console.log(data);
       if (data[0].Output == 0) {
-        throw new Error("Error while inserting inquiry followup, Please Try again");
+        throw new Error(
+          "Error while inserting inquiry followup, Please Try again"
+        );
       }
       res.status(200).json(data);
     } catch (err: any) {
       res.status(500).json({ error: err.message });
     }
-  })
+  }
+);
 userRouter.post(
   "/followup/quotation/insert",
   authenticateJWT,
@@ -271,7 +272,7 @@ userRouter.post(
       const mode = "INSERT";
       const userId_categoryId = await (req as any).knex.raw(
         getUseridCategoryidfollowup,
-        [208, querydata.category, querydata.user.uid]
+        [208, querydata.CategoryName, querydata.user.uid]
       );
       const categoryID = userId_categoryId[0].CategoryId;
       const userID = userId_categoryId[1].Userid;
@@ -281,23 +282,23 @@ userRouter.post(
         CategoryId: categoryID,
         UserId: userID,
         DocumentNo: querydata.DocumentNo,
+        DocumentDate: querydata.DocumentDate,
         FollowupDateTime: querydata.FollowupDateTime,
         FollowupEndDateTime: querydata.FollowupEndDateTime,
         FollowupDetails: querydata.FollowupDetails,
-        Visitto: querydata.Visitto,
+        Visitto: querydata.VisitTo,
         VisitorPerson: querydata.VisitorPerson,
         NextVisitDateTime: querydata.NextVisitDateTime,
         NextVisitPerson: querydata.NextVisitPerson,
         NextVisitorPerson: querydata.NextVisitorPerson,
-        AttentionDetail: querydata.AttentionDetail,
+        AttentionDetail: querydata.AttentionDetails,
         OrderGoesParty: querydata.OrderGoesParty,
         CloseReason: querydata.CloseReason,
         DetailDescription: querydata.DetailDescription,
         Rating: querydata.Rating,
-        ModeofContact: querydata.ModeofContact,
+        ModeofContact: querydata.ModeOfContact,
         FollowupStatus: querydata.FollowupStatus,
       };
-      console.log(params);
       const data = await (req as any).knex.raw(followupquotationinsertquery, [
         mode,
         params.SalesQuotationId,
@@ -305,6 +306,7 @@ userRouter.post(
         params.CategoryId,
         params.UserId,
         params.DocumentNo,
+        params.DocumentDate,
         params.FollowupDateTime,
         params.FollowupEndDateTime,
         params.FollowupDetails,
@@ -321,14 +323,16 @@ userRouter.post(
         params.ModeofContact,
         params.FollowupStatus,
       ]);
-      console.log(data);
       if (data[0].Output == 0) {
-        throw new Error("Error while inserting quotation followup, Please Try again");
+        throw new Error(
+          "Error while inserting quotation followup, Please Try again"
+        );
       }
       res.status(200).json(data);
     } catch (err: any) {
       res.status(500).json({ error: err.message });
     }
-  })
+  }
+);
 
 export default userRouter;
