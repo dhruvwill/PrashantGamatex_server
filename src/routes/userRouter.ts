@@ -200,12 +200,13 @@ userRouter.post(
       const querydata = req.body;
       const userId_categoryId = await (req as any).knex.raw(
         getUseridCategoryidfollowup,
-        [2361, querydata.category, querydata.user.uid, querydata.currency]
+        [206, querydata.category, querydata.user.uid]
       );
       const categoryID = userId_categoryId[0].CategoryId;
-      const userID = userId_categoryId[0].Userid;
+      const userID = userId_categoryId[1].Userid;
       const mode = "INSERT";
       const params = {
+        Mode: mode,
         SalesInquiryId: querydata.SalesInquiryId,
         SalesInquiryDetailsId: querydata.SalesInquiryDetailsId,
         CategoryId: categoryID,
@@ -227,8 +228,9 @@ userRouter.post(
         ModeofContact: querydata.ModeofContact,
         FollowupStatus: querydata.FollowupStatus,
       };
+      console.log(params);
       const data = await (req as any).knex.raw(followupinquiryinsertquery, [
-        mode,
+        params.Mode,
         params.SalesInquiryId,
         params.SalesInquiryDetailsId,
         params.CategoryId,
@@ -257,189 +259,75 @@ userRouter.post(
       res.status(200).json(data);
     } catch (err: any) {
       res.status(500).json({ error: err.message });
-    }})
-      userRouter.post(
-        "/followup/inquiry/insert",
-        authenticateJWT,
-        setDatabaseConnection,
-        async (req: Request, res: Response) => {
-          try {
-            const querydata = req.body;
-            const mode = "INSERT";
-            const params = {
-              SalesInquiryId: querydata.SalesInquiryId,
-              SalesInquiryDetailsId: querydata.SalesInquiryDetailsId,
-              FollowupDateTime: querydata.FollowupDateTime,
-              FollowupEndDateTime: querydata.FollowupEndDateTime,
-              FollowupDetails: querydata.FollowupDetails,
-              Visitto: querydata.VisitTo,
-              VisitorPerson: querydata.VisitorPerson,
-              NextVisitDateTime: querydata.NextVisitDateTime,
-              NextVisitPerson: querydata.NextVisitPerson,
-              NextVisitorPerson: querydata.NextVisitorPerson,
-              AttentionDetail: querydata.AttentionDetails,
-              OrderGoesParty: querydata.OrderGoesParty,
-              CloseReason: querydata.CloseReason,
-              DetailDescription: querydata.DetailDescription,
-              Rating: querydata.Rating,
-              ModeofContact: querydata.ModeOfContact,
-              FollowupStatus: querydata.FollowupStatus,
-            };
-            const data = await (req as any).knex.raw(followupinquiryinsertquery, [
-              mode,
-              params.SalesInquiryId,
-              params.SalesInquiryDetailsId,
-              params.FollowupDateTime,
-              params.FollowupEndDateTime,
-              params.FollowupDetails,
-              params.Visitto,
-              params.VisitorPerson,
-              params.NextVisitDateTime,
-              params.NextVisitPerson,
-              params.NextVisitorPerson,
-              params.AttentionDetail,
-              params.OrderGoesParty,
-              params.CloseReason,
-              params.DetailDescription,
-              params.Rating,
-              params.ModeofContact,
-              params.FollowupStatus,
-            ]);
-            console.log(data);
-            if (data[0].Output == 0) {
-              throw new Error(
-                "Error while inserting inquiry followup, Please Try again"
-              );
-            }
-            res.status(200).json(data);
-          }catch (err: any) {
-            res.status(500).json({ error: err.message });
-          }})
-      userRouter.post(
-        "/followup/quotation/insert",
-        authenticateJWT,
-        setDatabaseConnection,
-        async (req: Request, res: Response) => {
-          try {
-            const querydata = req.body;
-            const mode = "INSERT";
-            const userId_categoryId = await (req as any).knex.raw(
-              getUseridCategoryidfollowup,
-              [2361, querydata.category, querydata.user.uid,]
-            );
-            const categoryID = userId_categoryId[0].CategoryId;
-            const userID = userId_categoryId[0].Userid;
-            const params = {
-              SalesQuotationId: querydata.SalesQuotationId,
-              SalesQuotationDetailsId: querydata.SalesQuotationDetailsId,
-              CategoryId: categoryID,
-              UserId: userID,
-              DocumentNo: querydata.DocumentNo,
-              FollowupDateTime: querydata.FollowupDateTime,
-              FollowupEndDateTime: querydata.FollowupEndDateTime,
-              FollowupDetails: querydata.FollowupDetails,
-              Visitto: querydata.Visitto,
-              VisitorPerson: querydata.VisitorPerson,
-              NextVisitDateTime: querydata.NextVisitDateTime,
-              NextVisitPerson: querydata.NextVisitPerson,
-              NextVisitorPerson: querydata.NextVisitorPerson,
-              AttentionDetail: querydata.AttentionDetail,
-              OrderGoesParty: querydata.OrderGoesParty,
-              CloseReason: querydata.CloseReason,
-              DetailDescription: querydata.DetailDescription,
-              Rating: querydata.Rating,
-              ModeofContact: querydata.ModeofContact,
-              FollowupStatus: querydata.FollowupStatus,
-            };
-            const data = await (req as any).knex.raw(followupquotationinsertquery, [
-              mode,
-              params.SalesQuotationId,
-              params.SalesQuotationDetailsId,
-              params.CategoryId,
-              params.UserId,
-              params.DocumentNo,
-              params.FollowupDateTime,
-              params.FollowupEndDateTime,
-              params.FollowupDetails,
-              params.Visitto,
-              params.VisitorPerson,
-              params.NextVisitDateTime,
-              params.NextVisitPerson,
-              params.NextVisitorPerson,
-              params.AttentionDetail,
-              params.OrderGoesParty,
-              params.CloseReason,
-              params.DetailDescription,
-              params.Rating,
-              params.ModeofContact,
-              params.FollowupStatus,
-            ]);
-            console.log(data);
-            if (data[0].Output == 0) {
-              throw new Error("Error while inserting quotation followup, Please Try again");
-            }
-            res.status(200).json(data);
-          } catch (err: any) {
-            res.status(500).json({ error: err.message });
-          }})
-      userRouter.post(
-        "/followup/quotation/insert",
-        authenticateJWT,
-        setDatabaseConnection,
-        async (req: Request, res: Response) => {
-          try {
-            const querydata = req.body;
-            const mode = "INSERT";
-            const params = {
-              SalesQuotationId: querydata.SalesQuotationId,
-              SalesQuotationDetailsId: querydata.SalesQuotationDetailsId,
-              FollowupDateTime: querydata.FollowupDateTime,
-              FollowupEndDateTime: querydata.FollowupEndDateTime,
-              FollowupDetails: querydata.FollowupDetails,
-              Visitto: querydata.VisitTo,
-              VisitorPerson: querydata.VisitorPerson,
-              NextVisitDateTime: querydata.NextVisitDateTime,
-              NextVisitPerson: querydata.NextVisitPerson,
-              NextVisitorPerson: querydata.NextVisitorPerson,
-              AttentionDetail: querydata.AttentionDetails,
-              OrderGoesParty: querydata.OrderGoesParty,
-              CloseReason: querydata.CloseReason,
-              DetailDescription: querydata.DetailDescription,
-              Rating: querydata.Rating,
-              ModeofContact: querydata.ModeOfContact,
-              FollowupStatus: querydata.FollowupStatus,
-            };
-            const data = await (req as any).knex.raw(followupquotationinsertquery, [
-              mode,
-              params.SalesQuotationId,
-              params.SalesQuotationDetailsId,
-              params.FollowupDateTime,
-              params.FollowupEndDateTime,
-              params.FollowupDetails,
-              params.Visitto,
-              params.VisitorPerson,
-              params.NextVisitDateTime,
-              params.NextVisitPerson,
-              params.NextVisitorPerson,
-              params.AttentionDetail,
-              params.OrderGoesParty,
-              params.CloseReason,
-              params.DetailDescription,
-              params.Rating,
-              params.ModeofContact,
-              params.FollowupStatus,
-            ]);
-            console.log(data);
-            if (data[0].Output == 0) {
-              throw new Error(
-                "Error while inserting quotation followup, Please Try again"
-              );
-            }
-            res.status(200).json(data);
-          } catch (err: any) {
-            res.status(500).json({ error: err.message });
-          }
-        }
+    }
+  })
+userRouter.post(
+  "/followup/quotation/insert",
+  authenticateJWT,
+  setDatabaseConnection,
+  async (req: Request, res: Response) => {
+    try {
+      const querydata = req.body;
+      const mode = "INSERT";
+      const userId_categoryId = await (req as any).knex.raw(
+        getUseridCategoryidfollowup,
+        [208, querydata.category, querydata.user.uid]
       );
+      const categoryID = userId_categoryId[0].CategoryId;
+      const userID = userId_categoryId[0].Userid;
+      const params = {
+        SalesQuotationId: querydata.SalesQuotationId,
+        SalesQuotationDetailsId: querydata.SalesQuotationDetailsId,
+        CategoryId: categoryID,
+        UserId: userID,
+        DocumentNo: querydata.DocumentNo,
+        FollowupDateTime: querydata.FollowupDateTime,
+        FollowupEndDateTime: querydata.FollowupEndDateTime,
+        FollowupDetails: querydata.FollowupDetails,
+        Visitto: querydata.Visitto,
+        VisitorPerson: querydata.VisitorPerson,
+        NextVisitDateTime: querydata.NextVisitDateTime,
+        NextVisitPerson: querydata.NextVisitPerson,
+        NextVisitorPerson: querydata.NextVisitorPerson,
+        AttentionDetail: querydata.AttentionDetail,
+        OrderGoesParty: querydata.OrderGoesParty,
+        CloseReason: querydata.CloseReason,
+        DetailDescription: querydata.DetailDescription,
+        Rating: querydata.Rating,
+        ModeofContact: querydata.ModeofContact,
+        FollowupStatus: querydata.FollowupStatus,
+      };
+      const data = await (req as any).knex.raw(followupquotationinsertquery, [
+        mode,
+        params.SalesQuotationId,
+        params.SalesQuotationDetailsId,
+        params.CategoryId,
+        params.UserId,
+        params.DocumentNo,
+        params.FollowupDateTime,
+        params.FollowupEndDateTime,
+        params.FollowupDetails,
+        params.Visitto,
+        params.VisitorPerson,
+        params.NextVisitDateTime,
+        params.NextVisitPerson,
+        params.NextVisitorPerson,
+        params.AttentionDetail,
+        params.OrderGoesParty,
+        params.CloseReason,
+        params.DetailDescription,
+        params.Rating,
+        params.ModeofContact,
+        params.FollowupStatus,
+      ]);
+      console.log(data);
+      if (data[0].Output == 0) {
+        throw new Error("Error while inserting quotation followup, Please Try again");
+      }
+      res.status(200).json(data);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  })
 
-      export default userRouter;
+export default userRouter;

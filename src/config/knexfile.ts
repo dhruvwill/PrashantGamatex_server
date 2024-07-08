@@ -6,7 +6,7 @@ export default {
       server: "localhost",
       user: "CRM",
       password: "",
-      database: "PGPLCRM",
+      database: "PGPLCRM_NEW",
       options: {
         trustedConnection: true,
         trustServerCertificate: true,
