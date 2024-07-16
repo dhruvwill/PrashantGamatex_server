@@ -4,6 +4,9 @@ export const constantsquery = `
 	        @TimeFrame = ?,
 	        @Currency = ?,
 	        @Category = ?,
+                @Competitor =?,
+	        @Product =?,
+	        @Application =?,
                 @Usercode=?
 `;
 

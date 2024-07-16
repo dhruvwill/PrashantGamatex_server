@@ -21,12 +21,18 @@ constRouter.get(
         Category: "Category",
         TimeFrame: "TimeFrame",
         Currency: "Currency",
+        Competitor: "Competitor",
+        Product: "Product",
+        Application: "Application",
       };
       const data = await (req as any).knex.raw(constantsquery, [
         params.LeadSource,
         params.TimeFrame,
         params.Currency,
         params.Category,
+        params.Competitor,
+        params.Product,
+        params.Application,
         req.body.user.uid,
       ]);
       res.json(data);
