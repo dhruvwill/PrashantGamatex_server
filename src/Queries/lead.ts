@@ -4,6 +4,7 @@ export const leadinsertquery = `
           @Mode = ?, 
           @CompanyName = ?,
           @FormId = ?,
+          @DocumentDate = ?,
           @CategoryId = ?,
           @ScreenName = ?,
           @UserId = ?,
@@ -68,5 +69,3 @@ export const getleads = `
         EXEC [dbo].[CRM_ReferenceTransactionGetDetails_2361]
         @UserCode = ?
       `;
-
-

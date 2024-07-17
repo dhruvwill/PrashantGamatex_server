@@ -1,0 +1,59 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Open Terminals",
+      "type": "shell",
+      "command": "echo",
+      "args": ["Terminals opened"],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "new"
+      },
+      "problemMatcher": [],
+      "dependsOn": [
+        "Typescript Build",
+        "Node Dev Server",
+        "Expose Port using ngrok"
+      ]
+    },
+    {
+      "label": "Typescript Build",
+      "type": "shell",
+      "command": "npm run build:dev",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "new"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Node Dev Server",
+      "type": "shell",
+      "command": "npm run dev",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "new"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Expose Port using ngrok",
+      "type": "shell",
+      "command": "ngrok http 3000",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "new"
+      },
+      "problemMatcher": []
+    }
+  ]
+}

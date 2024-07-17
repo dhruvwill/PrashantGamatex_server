@@ -21,7 +21,6 @@ constRouter.get(
         Category: "Category",
         TimeFrame: "TimeFrame",
         Currency: "Currency",
-        Competitor: "Competitor",
         Product: "Product",
         Application: "Application",
       };
@@ -30,7 +29,6 @@ constRouter.get(
         params.TimeFrame,
         params.Currency,
         params.Category,
-        params.Competitor,
         params.Product,
         params.Application,
         req.body.user.uid,

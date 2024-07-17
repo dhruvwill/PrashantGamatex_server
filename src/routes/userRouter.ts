@@ -43,11 +43,12 @@ userRouter.patch(
       const mode = "UPDATE";
       const params = {
         CompanyName: querydata.user.company,
-        FormId: "2361",
-        CategoryId: categoryID,
+        FormId: 2361,
+        DocumentDate: new Date().toISOString().replace("T", " "),
+        CategoryId: Number(categoryID),
         ScreenName: "Lead Screen",
-        UserId: userID,
-        CurrencyID: currencyID,
+        UserId: Number(userID),
+        CurrencyID: Number(currencyID),
         RecordId: querydata.RecordId,
         UDF_CompanyName_2361: querydata.customerCompanyName,
         UDF_ContactPerson_2361: querydata.contactPerson,
@@ -58,7 +59,9 @@ userRouter.patch(
         UDF_LeadSource_2361: querydata.leadSource,
         UDF_CompetitionWith_2361: querydata.competition,
         UDF_TimeFrame_2361: querydata.timeFrame,
-        UDF_LeadRemindDate_2361: querydata.leadRemindDate,
+        UDF_LeadRemindDate_2361: new Date(querydata.leadRemindDate)
+          .toISOString()
+          .replace("T", " "),
         UDF_CustomerApplication_2361: querydata.customerApplication,
         UDF_CustomerExistingMachine_2361: querydata.customerExistingMachine,
         UDF_LeadNotes_2361: querydata.leadNote,
@@ -67,6 +70,7 @@ userRouter.patch(
         mode,
         params.CompanyName,
         params.FormId,
+        params.DocumentDate,
         params.CategoryId,
         params.ScreenName,
         params.UserId,
@@ -102,6 +106,9 @@ userRouter.post(
   async (req: Request, res: Response) => {
     try {
       const querydata = req.body;
+      console.log("Data: ", req.body);
+      console.log("files: ", req.files);
+      console.log(querydata.category);
       const userId_categoryId_currencyId_data = await (req as any).knex.raw(
         getuserIdCategoryIdquery,
         [2361, querydata.category, querydata.user.uid, querydata.currency]
@@ -109,15 +116,18 @@ userRouter.post(
       const categoryID = userId_categoryId_currencyId_data[0].CategoryID;
       const userID = userId_categoryId_currencyId_data[0].UserID;
       const currencyID = userId_categoryId_currencyId_data[0].CurrencyID;
+      console.log(typeof categoryID, typeof userID, typeof currencyID);
+
       const mode = "INSERT";
       const params = {
         CompanyName: querydata.user.company,
-        FormId: "2361",
-        CategoryId: categoryID,
+        FormId: 2361,
+        DocumentDate: new Date().toISOString().replace("T", " "),
+        CategoryId: Number(categoryID),
         ScreenName: "Lead Screen",
-        UserId: userID,
+        UserId: Number(userID),
         RecordId: 0,
-        CurrencyId: currencyID,
+        CurrencyId: Number(currencyID),
         UDF_CompanyName_2361: querydata.customerCompanyName,
         UDF_ContactPerson_2361: querydata.contactPerson,
         UDF_Designation_2361: querydata.designation,
@@ -127,7 +137,9 @@ userRouter.post(
         UDF_LeadSource_2361: querydata.leadSource,
         UDF_CompetitionWith_2361: querydata.competition,
         UDF_TimeFrame_2361: querydata.timeFrame,
-        UDF_LeadRemindDate_2361: querydata.leadRemindDate,
+        UDF_LeadRemindDate_2361: new Date(querydata.leadRemindDate)
+          .toISOString()
+          .replace("T", " "),
         UDF_CustomerApplication_2361: querydata.customerApplication,
         UDF_CustomerExistingMachine_2361: querydata.customerExistingMachine,
         UDF_LeadNotes_2361: querydata.leadNote,
@@ -136,6 +148,7 @@ userRouter.post(
         mode,
         params.CompanyName,
         params.FormId,
+        params.DocumentDate,
         params.CategoryId,
         params.ScreenName,
         params.UserId,
@@ -158,8 +171,10 @@ userRouter.post(
       if (data[0].Output == 0) {
         throw new Error("Error while inserting lead, Please Try again");
       }
+      console.log("Data: ", data);
       res.status(200).json(data);
     } catch (err: any) {
+      console.log("Error: ", err);
       res.status(500).json({ error: err.message });
     }
   }
