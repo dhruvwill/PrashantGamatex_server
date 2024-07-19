@@ -253,7 +253,7 @@ userRouter.post(
         Mode: mode,
         SalesInquiryId: Number(querydata.SalesInquiryId),
         SalesInquiryDetailsId: Number(querydata.SalesInquiryDetailsId),
-        CategoryId: categoryID,
+        CategoryId: Number(categoryID),
         UserId: Number(userID),
         DocumentNo: 0,
         // DocumentDate: querydata.DocumentDate,
@@ -262,19 +262,16 @@ userRouter.post(
           .replace("T", " "),
         // FollowupDateTime: querydata.FollowupDateTime,
         FollowupDateTime: new Date(querydata.FollowupDateTime)
-          .toISOString()
-          .replace("T", " "),
+          .toISOString(),
         // FollowupEndDateTime: querydata.FollowupEndDateTime,
         FollowupEndDateTime: new Date(querydata.FollowupEndDateTime)
-          .toISOString()
-          .replace("T", " "),
+          .toISOString(),
         FollowupDetails: querydata.FollowupDetails,
         Visitto: querydata.VisitTo,
         VisitorPerson: querydata.VisitorPerson,
         // NextVisitDateTime: querydata.NextVisitDateTime,
         NextVisitDateTime: new Date(querydata.NextVisitDateTime)
-          .toISOString()
-          .replace("T", " "),
+          .toISOString(),
         NextVisitPerson: querydata.NextVisitPerson,
         NextVisitorPerson: querydata.NextVisitorPerson,
         AttentionDetail: querydata.AttentionDetails,
@@ -327,7 +324,6 @@ userRouter.post(
   async (req: Request, res: Response) => {
     try {
       const querydata = req.body;
-      console.log(querydata);
       const mode = "INSERT";
       const userId_categoryId = await (req as any).knex.raw(
         getUseridCategoryidfollowup,
@@ -335,28 +331,21 @@ userRouter.post(
       );
       const categoryID = userId_categoryId[0].CategoryId;
       const userID = userId_categoryId[0].Userid;
-      console.log(categoryID, userID);
       const params = {
         SalesQuotationId: Number(querydata.SalesQuotationId),
         SalesQuotationDetailsId: Number(querydata.SalesQuotationDetailsId),
-        CategoryId: categoryID,
+        CategoryId: Number(categoryID),
         UserId: Number(userID),
         DocumentNo: 0,
         DocumentDate: new Date(querydata.DocumentDate)
           .toISOString()
           .replace("T", " "),
-        FollowupDateTime: new Date(querydata.FollowupDateTime)
-          .toISOString()
-          .replace("T", " "),
-        FollowupEndDateTime: new Date(querydata.FollowupEndDateTime)
-          .toISOString()
-          .replace("T", " "),
+        FollowupDateTime: new Date(querydata.FollowupDateTime).toISOString(),
+        FollowupEndDateTime: new Date(querydata.FollowupEndDateTime).toISOString(),
         FollowupDetails: querydata.FollowupDetails,
         Visitto: querydata.VisitTo,
         VisitorPerson: querydata.VisitorPerson,
-        NextVisitDateTime: new Date(querydata.NextVisitDateTime)
-          .toISOString()
-          .replace("T", " "),
+        NextVisitDateTime: new Date(querydata.NextVisitDateTime).toISOString(),
         NextVisitPerson: querydata.NextVisitPerson,
         NextVisitorPerson: querydata.NextVisitorPerson,
         AttentionDetail: querydata.AttentionDetails,
@@ -367,7 +356,6 @@ userRouter.post(
         ModeofContact: querydata.ModeOfContact,
         FollowupStatus: querydata.FollowupStatus,
       };
-      console.log("Params:", params);
       const data = await (req as any).knex.raw(followupquotationinsertquery, [
         mode,
         params.SalesQuotationId,
