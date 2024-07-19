@@ -10,6 +10,7 @@ export const leadinsertquery = `
           @UserId = ?,
           @RecordId = ?,
           @CurrencyId = ?,
+          @ImageAttachment = ?,
           @UDF_CompanyName_2361 = ?, 
           @UDF_ContactPerson_2361 = ?, 
           @UDF_Designation_2361 = ?, 

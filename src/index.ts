@@ -11,11 +11,7 @@ const app: Express = express();
 const port = process.env.PORT || 3000;
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    // Set the destination folder
-    cb(
-      null,
-      `C:\\Program Files (x86)\\Nutec Infotech Pvt Ltd\\DigitalSignaturePdfFile\\CRM`
-    );
+    cb(null, `C:\\CRM\\`);
   },
   filename: function (req: any, file, cb) {
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
@@ -32,7 +28,6 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(noCache);
-app.use(upload.any());
 
 // routes
 app.use("/auth", authRouter);

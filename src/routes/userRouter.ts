@@ -15,6 +15,7 @@ import {
   followupquotationinsertquery,
   getUseridCategoryidfollowup,
 } from "../queries/followup";
+import { uploadFiles } from "../middleware/uploadFiles";
 
 const userRouter = Router();
 
@@ -103,6 +104,7 @@ userRouter.patch(
 );
 userRouter.post(
   "/lead/insert",
+  uploadFiles,
   authenticateJWT,
   setDatabaseConnection,
   async (req: Request, res: Response) => {
@@ -111,27 +113,27 @@ userRouter.post(
       const files = req.files as Express.Multer.File[];
 
       console.log("Data: ", req.body);
-      console.log("files: ", req.files);
+      console.log("Files: ", req.files);
 
-      // let fileUrls: string[] = [];
+      const savedFiles = files.map((file) => {
+        const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+        const filename = `${req.body.user.uid}_${uniqueSuffix}${path.extname(
+          file.originalname
+        )}`;
+        const filepath = path.join("C:\\CRM\\", filename);
 
-      // if (files && files.length > 0) {
-      //   for (const file of files) {
-      //     // Generate a new filename
-      //     const newFilename = `lead_${Date.now()}_${file.originalname}`;
-      //     const oldPath = path.join("uploads", file.filename);
-      //     const newPath = path.join("uploads", newFilename);
+        fs.writeFileSync(filepath, file.buffer);
 
-      //     // Rename the file
-      //     fs.renameSync(oldPath, newPath);
+        return {
+          originalname: file.originalname,
+          filename: filename,
+          path: filepath,
+          size: file.size,
+        };
+      });
 
-      //     // Store the new file path
-      //     const fileUrl = `/uploads/${newFilename}`;
-      //     fileUrls.push(fileUrl);
+      const filePaths = savedFiles.map((file) => file.filename).join(",");
 
-      //     console.log(`File saved at: ${newPath}`);
-      //   }
-      // }
       const userId_categoryId_currencyId_data = await (req as any).knex.raw(
         getuserIdCategoryIdquery,
         [2361, querydata.user.uid, querydata.currency]
@@ -150,6 +152,7 @@ userRouter.post(
         UserId: Number(userID),
         RecordId: 0,
         CurrencyId: Number(currencyID),
+        ImageAttachment: filePaths,
         UDF_CompanyName_2361: querydata.customerCompanyName,
         UDF_ContactPerson_2361: querydata.contactPerson,
         UDF_Designation_2361: querydata.designation,
@@ -176,6 +179,7 @@ userRouter.post(
         params.UserId,
         params.RecordId,
         params.CurrencyId,
+        params.ImageAttachment,
         params.UDF_CompanyName_2361,
         params.UDF_ContactPerson_2361,
         params.UDF_Designation_2361,
