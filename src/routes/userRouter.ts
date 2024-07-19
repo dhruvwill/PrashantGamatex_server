@@ -1,3 +1,5 @@
+import fs from "fs";
+import path from "path";
 import { Router, Request, Response } from "express";
 import { setDatabaseConnection } from "../middleware/setDatabase";
 import { authenticateJWT } from "../middleware/authenticateJWT";
@@ -35,7 +37,7 @@ userRouter.patch(
       const querydata = req.body;
       const userId_categoryId_currencyId_data = await (req as any).knex.raw(
         getuserIdCategoryIdquery,
-        [2361, querydata.category, querydata.user.uid, querydata.currency]
+        [2361, querydata.user.uid, querydata.currency]
       );
       const categoryID = userId_categoryId_currencyId_data[0].CategoryID;
       const userID = userId_categoryId_currencyId_data[0].UserID;
@@ -106,17 +108,37 @@ userRouter.post(
   async (req: Request, res: Response) => {
     try {
       const querydata = req.body;
+      const files = req.files as Express.Multer.File[];
+
       console.log("Data: ", req.body);
       console.log("files: ", req.files);
-      console.log(querydata.category);
+
+      // let fileUrls: string[] = [];
+
+      // if (files && files.length > 0) {
+      //   for (const file of files) {
+      //     // Generate a new filename
+      //     const newFilename = `lead_${Date.now()}_${file.originalname}`;
+      //     const oldPath = path.join("uploads", file.filename);
+      //     const newPath = path.join("uploads", newFilename);
+
+      //     // Rename the file
+      //     fs.renameSync(oldPath, newPath);
+
+      //     // Store the new file path
+      //     const fileUrl = `/uploads/${newFilename}`;
+      //     fileUrls.push(fileUrl);
+
+      //     console.log(`File saved at: ${newPath}`);
+      //   }
+      // }
       const userId_categoryId_currencyId_data = await (req as any).knex.raw(
         getuserIdCategoryIdquery,
-        [2361, querydata.category, querydata.user.uid, querydata.currency]
+        [2361, querydata.user.uid, querydata.currency]
       );
       const categoryID = userId_categoryId_currencyId_data[0].CategoryID;
       const userID = userId_categoryId_currencyId_data[0].UserID;
       const currencyID = userId_categoryId_currencyId_data[0].CurrencyID;
-      console.log(typeof categoryID, typeof userID, typeof currencyID);
 
       const mode = "INSERT";
       const params = {

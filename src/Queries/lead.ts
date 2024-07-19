@@ -59,10 +59,8 @@ export const getuserIdCategoryIdquery = `
         
         EXEC [dbo].[CRM_ReferenceTransactionGetUserIdCategoryId_2361]
           @ApplicableFormId = ?, 
-          @CategoryName = ?, 
           @UserCode = ?,
           @Currency = ?
-
       `;
 
 export const getleads = `
