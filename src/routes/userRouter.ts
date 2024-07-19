@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { Router, Request, Response } from "express";
+import { Router, Request, Response, query } from "express";
 import { setDatabaseConnection } from "../middleware/setDatabase";
 import { authenticateJWT } from "../middleware/authenticateJWT";
 import {
@@ -36,6 +36,7 @@ userRouter.patch(
   async (req: Request, res: Response) => {
     try {
       const querydata = req.body;
+
       const userId_categoryId_currencyId_data = await (req as any).knex.raw(
         getuserIdCategoryIdquery,
         [2361, querydata.user.uid, querydata.currency]
@@ -43,6 +44,7 @@ userRouter.patch(
       const categoryID = userId_categoryId_currencyId_data[0].CategoryID;
       const userID = userId_categoryId_currencyId_data[0].UserID;
       const currencyID = userId_categoryId_currencyId_data[0].CurrencyID;
+
       const mode = "UPDATE";
       const params = {
         CompanyName: querydata.user.company,
@@ -52,6 +54,7 @@ userRouter.patch(
         ScreenName: "Lead Screen",
         UserId: Number(userID),
         CurrencyID: Number(currencyID),
+        ImageAttachment: "",
         RecordId: querydata.RecordId,
         UDF_CompanyName_2361: querydata.customerCompanyName,
         UDF_ContactPerson_2361: querydata.contactPerson,
@@ -79,6 +82,7 @@ userRouter.patch(
         params.UserId,
         params.RecordId,
         params.CurrencyID,
+        params.ImageAttachment,
         params.UDF_CompanyName_2361,
         params.UDF_ContactPerson_2361,
         params.UDF_Designation_2361,
@@ -98,6 +102,7 @@ userRouter.patch(
       }
       res.status(200).json(data);
     } catch (err: any) {
+      console.log("Error: ", err);
       res.status(500).json({ error: err.message });
     }
   }
@@ -113,7 +118,6 @@ userRouter.post(
       const files = req.files as Express.Multer.File[];
 
       console.log("Data: ", req.body);
-      console.log("Files: ", req.files);
 
       const savedFiles = files.map((file) => {
         const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
@@ -133,6 +137,7 @@ userRouter.post(
       });
 
       const filePaths = savedFiles.map((file) => file.filename).join(",");
+      console.log(filePaths);
 
       const userId_categoryId_currencyId_data = await (req as any).knex.raw(
         getuserIdCategoryIdquery,
@@ -239,25 +244,37 @@ userRouter.post(
       const querydata = req.body;
       const userId_categoryId = await (req as any).knex.raw(
         getUseridCategoryidfollowup,
-        [208, querydata.CategoryName, querydata.user.uid]
+        [querydata.user.uid, 208]
       );
       const categoryID = userId_categoryId[0].CategoryId;
-      const userID = userId_categoryId[1].Userid;
+      const userID = userId_categoryId[0].Userid;
       const mode = "INSERT";
       const params = {
         Mode: mode,
-        SalesInquiryId: querydata.SalesInquiryId,
-        SalesInquiryDetailsId: querydata.SalesInquiryDetailsId,
+        SalesInquiryId: Number(querydata.SalesInquiryId),
+        SalesInquiryDetailsId: Number(querydata.SalesInquiryDetailsId),
         CategoryId: categoryID,
-        UserId: userID,
-        DocumentNo: querydata.DocumentNo,
-        DocumentDate: querydata.DocumentDate,
-        FollowupDateTime: querydata.FollowupDateTime,
-        FollowupEndDateTime: querydata.FollowupEndDateTime,
+        UserId: Number(userID),
+        DocumentNo: 0,
+        // DocumentDate: querydata.DocumentDate,
+        DocumentDate: new Date(querydata.DocumentDate)
+          .toISOString()
+          .replace("T", " "),
+        // FollowupDateTime: querydata.FollowupDateTime,
+        FollowupDateTime: new Date(querydata.FollowupDateTime)
+          .toISOString()
+          .replace("T", " "),
+        // FollowupEndDateTime: querydata.FollowupEndDateTime,
+        FollowupEndDateTime: new Date(querydata.FollowupEndDateTime)
+          .toISOString()
+          .replace("T", " "),
         FollowupDetails: querydata.FollowupDetails,
         Visitto: querydata.VisitTo,
         VisitorPerson: querydata.VisitorPerson,
-        NextVisitDateTime: querydata.NextVisitDateTime,
+        // NextVisitDateTime: querydata.NextVisitDateTime,
+        NextVisitDateTime: new Date(querydata.NextVisitDateTime)
+          .toISOString()
+          .replace("T", " "),
         NextVisitPerson: querydata.NextVisitPerson,
         NextVisitorPerson: querydata.NextVisitorPerson,
         AttentionDetail: querydata.AttentionDetails,
@@ -310,26 +327,36 @@ userRouter.post(
   async (req: Request, res: Response) => {
     try {
       const querydata = req.body;
+      console.log(querydata);
       const mode = "INSERT";
       const userId_categoryId = await (req as any).knex.raw(
         getUseridCategoryidfollowup,
-        [208, querydata.CategoryName, querydata.user.uid]
+        [querydata.user.uid, 208]
       );
       const categoryID = userId_categoryId[0].CategoryId;
-      const userID = userId_categoryId[1].Userid;
+      const userID = userId_categoryId[0].Userid;
+      console.log(categoryID, userID);
       const params = {
-        SalesQuotationId: querydata.SalesQuotationId,
-        SalesQuotationDetailsId: querydata.SalesQuotationDetailsId,
+        SalesQuotationId: Number(querydata.SalesQuotationId),
+        SalesQuotationDetailsId: Number(querydata.SalesQuotationDetailsId),
         CategoryId: categoryID,
-        UserId: userID,
-        DocumentNo: querydata.DocumentNo,
-        DocumentDate: querydata.DocumentDate,
-        FollowupDateTime: querydata.FollowupDateTime,
-        FollowupEndDateTime: querydata.FollowupEndDateTime,
+        UserId: Number(userID),
+        DocumentNo: 0,
+        DocumentDate: new Date(querydata.DocumentDate)
+          .toISOString()
+          .replace("T", " "),
+        FollowupDateTime: new Date(querydata.FollowupDateTime)
+          .toISOString()
+          .replace("T", " "),
+        FollowupEndDateTime: new Date(querydata.FollowupEndDateTime)
+          .toISOString()
+          .replace("T", " "),
         FollowupDetails: querydata.FollowupDetails,
         Visitto: querydata.VisitTo,
         VisitorPerson: querydata.VisitorPerson,
-        NextVisitDateTime: querydata.NextVisitDateTime,
+        NextVisitDateTime: new Date(querydata.NextVisitDateTime)
+          .toISOString()
+          .replace("T", " "),
         NextVisitPerson: querydata.NextVisitPerson,
         NextVisitorPerson: querydata.NextVisitorPerson,
         AttentionDetail: querydata.AttentionDetails,
@@ -340,6 +367,7 @@ userRouter.post(
         ModeofContact: querydata.ModeOfContact,
         FollowupStatus: querydata.FollowupStatus,
       };
+      console.log("Params:", params);
       const data = await (req as any).knex.raw(followupquotationinsertquery, [
         mode,
         params.SalesQuotationId,

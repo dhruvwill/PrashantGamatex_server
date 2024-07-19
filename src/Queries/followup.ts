@@ -10,9 +10,8 @@ export const getfollowupquotation = `
 
 export const getUseridCategoryidfollowup = `
         EXEC [dbo].[CRM_SalesFollowupGetUseridCategoryid]
-	@ApplicableFormId = ?,
-	@CategoryName = ?,
-        @Usercode = ?
+        @Usercode = ?,
+	@ApplicableFormId = ?
 `;
 
 export const followupinquiryinsertquery = `
