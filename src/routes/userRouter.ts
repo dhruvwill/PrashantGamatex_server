@@ -124,7 +124,10 @@ userRouter.post(
         const filename = `${req.body.user.uid}_${uniqueSuffix}${path.extname(
           file.originalname
         )}`;
-        const filepath = path.join("C:\\CRM\\", filename);
+        const filepath = path.join(
+          "C:\\Program Files (x86)\\Nutec Infotech Pvt Ltd\\DigitalSignaturePdfFile\\CRM",
+          filename
+        );
 
         fs.writeFileSync(filepath, file.buffer);
 
@@ -261,17 +264,16 @@ userRouter.post(
           .toISOString()
           .replace("T", " "),
         // FollowupDateTime: querydata.FollowupDateTime,
-        FollowupDateTime: new Date(querydata.FollowupDateTime)
-          .toISOString(),
+        FollowupDateTime: new Date(querydata.FollowupDateTime).toISOString(),
         // FollowupEndDateTime: querydata.FollowupEndDateTime,
-        FollowupEndDateTime: new Date(querydata.FollowupEndDateTime)
-          .toISOString(),
+        FollowupEndDateTime: new Date(
+          querydata.FollowupEndDateTime
+        ).toISOString(),
         FollowupDetails: querydata.FollowupDetails,
         Visitto: querydata.VisitTo,
         VisitorPerson: querydata.VisitorPerson,
         // NextVisitDateTime: querydata.NextVisitDateTime,
-        NextVisitDateTime: new Date(querydata.NextVisitDateTime)
-          .toISOString(),
+        NextVisitDateTime: new Date(querydata.NextVisitDateTime).toISOString(),
         NextVisitPerson: querydata.NextVisitPerson,
         NextVisitorPerson: querydata.NextVisitorPerson,
         AttentionDetail: querydata.AttentionDetails,
@@ -341,7 +343,9 @@ userRouter.post(
           .toISOString()
           .replace("T", " "),
         FollowupDateTime: new Date(querydata.FollowupDateTime).toISOString(),
-        FollowupEndDateTime: new Date(querydata.FollowupEndDateTime).toISOString(),
+        FollowupEndDateTime: new Date(
+          querydata.FollowupEndDateTime
+        ).toISOString(),
         FollowupDetails: querydata.FollowupDetails,
         Visitto: querydata.VisitTo,
         VisitorPerson: querydata.VisitorPerson,
