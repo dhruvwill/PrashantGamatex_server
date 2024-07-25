@@ -16,6 +16,7 @@ import {
   getUseridCategoryidfollowup,
 } from "../queries/followup";
 import { uploadFiles } from "../middleware/uploadFiles";
+import { expensegetdetailsquery, expenseinsertquery } from "../queries/expense";
 
 const userRouter = Router();
 
@@ -395,5 +396,58 @@ userRouter.post(
     }
   }
 );
+
+userRouter.get('/expense/get', authenticateJWT, setDatabaseConnection, async (req: Request, res: Response) => {
+  try {
+    const data = await (req as any).knex.raw(expensegetdetailsquery, [req.body.user.uid]);
+    res.status(200).json(data);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+})
+
+userRouter.post('/expense/insert', authenticateJWT, setDatabaseConnection, async (req: Request, res: Response) => {
+  try {
+    const querydata = req.body;
+    console.log("Data: ", querydata);
+    const companyName = querydata.customerCompany;
+    const visitDate = querydata.visitDate;
+    const userCode = querydata.user.uid;
+    let data
+    for (const item of querydata.expenseItems) {
+
+      // save filename here and use that name in params in place of item.attachment
+
+      const params = {
+        Usercode: userCode,
+        ExpDate: new Date(visitDate).toISOString(),
+        CustomerCompanyName: companyName,
+        ExpType: item.type,
+        ExpDesc: item.description,
+        ExpAmount: Number(item.amount),
+        ExpImage: item.attachment,
+      };
+
+      data = await (req as any).knex.raw(expenseinsertquery, [
+        params.Usercode,
+        params.ExpDate,
+        params.CustomerCompanyName,
+        params.ExpType,
+        params.ExpDesc,
+        params.ExpAmount,
+        params.ExpImage,
+      ]);
+
+      if (data[0].Output == 0) {
+        throw new Error(
+          "Error while inserting expense, Please Try again"
+        );
+      }
+    }
+    res.status(200).json(data);
+  } catch (err:any) {
+      res.status(500).json({ error: err.message });
+  }
+});
 
 export default userRouter;
