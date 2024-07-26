@@ -126,7 +126,7 @@ userRouter.post(
           file.originalname
         )}`;
         const filepath = path.join(
-          "C:\\Program Files (x86)\\Nutec Infotech Pvt Ltd\\DigitalSignaturePdfFile\\CRM",
+          "C:\\Program Files (x86)\\Nutec Infotech Pvt Ltd\\DigitalSignaturePdfFile\\CRM\\LEAD",
           filename
         );
 
@@ -439,8 +439,8 @@ userRouter.post(
           file.originalname
         )}`;
         const filepath = path.join(
-          // "C:\\Program Files (x86)\\Nutec Infotech Pvt Ltd\\DigitalSignaturePdfFile\\CRM",
-          "C:\\CRM\\Expense\\",
+          "C:\\Program Files (x86)\\Nutec Infotech Pvt Ltd\\DigitalSignaturePdfFile\\CRM\\EXPENSE",
+          // "C:\\CRM\\Expense\\",
           filename
         );
 
