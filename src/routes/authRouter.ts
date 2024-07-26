@@ -20,10 +20,10 @@ authRouter.post("/login", setDatabaseConnection, async (req: any, res: any) => {
     const user = await req
       .knex("dbo.UserMasterUDF")
       .select({
-        password: "CRMPasswrod",
+        password: "UDF_CRMPasswrod_26",
       })
       .where("UserMasterId", data[0].masterid)
-      .andWhere("CRMPasswrod", req.body.user.password);
+      .andWhere("UDF_CRMPasswrod_26", req.body.user.password);
 
     if (user.length > 0) {
       const payload = {
