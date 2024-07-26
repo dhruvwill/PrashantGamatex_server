@@ -6,6 +6,7 @@ export const constantsquery = `
 	        @Category = ?,
                 @Product = ?,
                 @Application = ?,
+                @Expense = ?,
                 @Form = ?,
                 @Usercode=?
 `;

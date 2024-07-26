@@ -13,12 +13,23 @@ authRouter.post("/login", setDatabaseConnection, async (req: any, res: any) => {
         uid: "UserCode",
         username: "UserIdentification",
         name: "Description",
+        masterid: "UserMasterId",
       })
-      .where("UserIdentification", req.body.user.username)
-      .andWhere("Password", req.body.user.password);
-    if (data.length > 0) {
+      .where("UserIdentification", req.body.user.username);
+
+    const user = await req
+      .knex("dbo.UserMasterUDF")
+      .select({
+        password: "CRMPasswrod",
+      })
+      .where("UserMasterId", data[0].masterid)
+      .andWhere("CRMPasswrod", req.body.user.password);
+
+    if (user.length > 0) {
       const payload = {
-        ...data[0],
+        uid: data[0].uid,
+        username: data[0].username,
+        name: data[0].name,
         company: req.body.user.company,
       };
       const token = sign(payload, secret, { expiresIn: "1h" });

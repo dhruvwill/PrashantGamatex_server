@@ -23,7 +23,8 @@ constRouter.get(
         Currency: "Currency",
         Product: "Product",
         Application: "Application",
-        Form:"Lead"
+        Expense: "Expense",
+        Form: "Lead",
       };
       const data = await (req as any).knex.raw(constantsquery, [
         params.LeadSource,
@@ -32,9 +33,9 @@ constRouter.get(
         params.Category,
         params.Product,
         params.Application,
+        params.Expense,
         params.Form,
         req.body.user.uid,
-
       ]);
       res.json(data);
     } catch (err: any) {

@@ -397,57 +397,108 @@ userRouter.post(
   }
 );
 
-userRouter.get('/expense/get', authenticateJWT, setDatabaseConnection, async (req: Request, res: Response) => {
-  try {
-    const data = await (req as any).knex.raw(expensegetdetailsquery, [req.body.user.uid]);
-    res.status(200).json(data);
-  } catch (err: any) {
-    res.status(500).json({ error: err.message });
-  }
-})
-
-userRouter.post('/expense/insert', authenticateJWT, setDatabaseConnection, async (req: Request, res: Response) => {
-  try {
-    const querydata = req.body;
-    console.log("Data: ", querydata);
-    const companyName = querydata.customerCompany;
-    const visitDate = querydata.visitDate;
-    const userCode = querydata.user.uid;
-    let data
-    for (const item of querydata.expenseItems) {
-
-      // save filename here and use that name in params in place of item.attachment
-
-      const params = {
-        Usercode: userCode,
-        ExpDate: new Date(visitDate).toISOString(),
-        CustomerCompanyName: companyName,
-        ExpType: item.type,
-        ExpDesc: item.description,
-        ExpAmount: Number(item.amount),
-        ExpImage: item.attachment,
-      };
-
-      data = await (req as any).knex.raw(expenseinsertquery, [
-        params.Usercode,
-        params.ExpDate,
-        params.CustomerCompanyName,
-        params.ExpType,
-        params.ExpDesc,
-        params.ExpAmount,
-        params.ExpImage,
+userRouter.get(
+  "/expense/get",
+  authenticateJWT,
+  setDatabaseConnection,
+  async (req: Request, res: Response) => {
+    try {
+      const data = await (req as any).knex.raw(expensegetdetailsquery, [
+        req.body.user.uid,
       ]);
-
-      if (data[0].Output == 0) {
-        throw new Error(
-          "Error while inserting expense, Please Try again"
-        );
-      }
-    }
-    res.status(200).json(data);
-  } catch (err:any) {
+      res.status(200).json(data);
+    } catch (err: any) {
       res.status(500).json({ error: err.message });
+    }
   }
-});
+);
+
+userRouter.post(
+  "/expense/insert",
+  uploadFiles,
+  authenticateJWT,
+  setDatabaseConnection,
+  async (req: Request, res: Response) => {
+    try {
+      const querydata = req.body;
+
+      const uploadedFiles = req.files as Express.Multer.File[];
+      console.log("Files: ", uploadedFiles);
+
+      const filePaths: string[] = new Array(querydata.expenseItems.length).fill(
+        ""
+      );
+
+      const savedFiles = uploadedFiles.map((file) => {
+        const match = file.fieldname.match(
+          /expenseItems\[(\d+)\]\[attachment\]/
+        );
+
+        const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+        const filename = `${req.body.user.uid}_${uniqueSuffix}${path.extname(
+          file.originalname
+        )}`;
+        const filepath = path.join(
+          // "C:\\Program Files (x86)\\Nutec Infotech Pvt Ltd\\DigitalSignaturePdfFile\\CRM",
+          "C:\\CRM\\Expense\\",
+          filename
+        );
+
+        if (match) {
+          const index = parseInt(match[1]);
+          filePaths[index] = filename;
+        }
+
+        fs.writeFileSync(filepath, file.buffer);
+
+        return {
+          originalname: file.originalname,
+          filename: filename,
+          path: filepath,
+          size: file.size,
+        };
+      });
+
+      console.log("File paths: ", filePaths);
+
+      console.log("Data: ", querydata);
+      const companyName = querydata.customerCompany;
+      const visitDate = querydata.visitDate;
+      const userCode = querydata.user.uid;
+      let data;
+
+      for (let i = 0; i < querydata.expenseItems.length; i++) {
+        const item = querydata.expenseItems[i];
+
+        const params = {
+          Usercode: userCode,
+          ExpDate: new Date(visitDate).toISOString(),
+          CustomerCompanyName: companyName,
+          ExpType: item.type,
+          ExpDesc: item.description,
+          ExpAmount: Number(item.amount),
+          ExpImage: filePaths[i], // Use the filename from filePaths array
+        };
+
+        data = await (req as any).knex.raw(expenseinsertquery, [
+          params.Usercode,
+          params.ExpDate,
+          params.CustomerCompanyName,
+          params.ExpType,
+          params.ExpDesc,
+          params.ExpAmount,
+          params.ExpImage,
+        ]);
+
+        if (data[0].Output == 0) {
+          throw new Error("Error while inserting expense, Please Try again");
+        }
+      }
+      res.status(200).json(data);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  }
+);
 
 export default userRouter;
