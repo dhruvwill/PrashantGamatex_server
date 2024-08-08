@@ -17,8 +17,48 @@ import {
 } from "../queries/followup";
 import { uploadFiles } from "../middleware/uploadFiles";
 import { expensegetdetailsquery, expenseinsertquery } from "../queries/expense";
+import { dashboardanalytics,leadreminddate,followupnextdatetime } from "../queries/homepage";
 
 const userRouter = Router();
+
+userRouter.get(
+  "/dashboard/get", 
+  authenticateJWT,
+  setDatabaseConnection, 
+  async (req: Request, res: Response) => {
+    try{
+      const data = await (req as any).knex.raw(dashboardanalytics, [req.body.user.uid]);
+      res.status(200).json(data);
+    }catch(err:any){
+      res.status(500).json({error:err.message})
+    }
+  })
+
+userRouter.get(
+  "/leadreminddate/get", 
+  authenticateJWT, 
+  setDatabaseConnection, 
+  async (req: Request, res: Response) => {
+    try{
+      const data = await (req as any).knex.raw(leadreminddate, [req.body.user.uid]);
+      res.status(200).json(data);
+    }catch(err:any){
+      res.status(500).json({error:err.message})
+    }
+})
+
+userRouter.get(
+  "/followupnextdatetime/get", 
+  authenticateJWT, 
+  setDatabaseConnection, 
+  async (req: Request, res: Response) => {
+    try{
+      const data = await (req as any).knex.raw(followupnextdatetime, [req.body.user.uid]);
+      res.status(200).json(data);
+    }catch(err:any){
+      res.status(500).json({error:err.message})
+    }
+})
 
 userRouter.get(
   "/lead/get",
