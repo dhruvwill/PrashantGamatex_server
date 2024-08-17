@@ -14,6 +14,7 @@ import {
   followupinquiryinsertquery,
   followupquotationinsertquery,
   getUseridCategoryidfollowup,
+  getfollowup,
 } from "../queries/followup";
 import { uploadFiles } from "../middleware/uploadFiles";
 import { expensegetdetailsquery, expenseinsertquery } from "../queries/expense";
@@ -256,14 +257,44 @@ userRouter.post(
 );
 
 userRouter.get(
+  "/followup/get",
+  authenticateJWT,
+  setDatabaseConnection,
+  async (req: Request, res: Response) => {
+    try{
+      const querydata = req.body;
+      const params = {
+        Usercode: req.body.user.uid,
+        InquiryId: querydata.InquiryId,
+        QuotationId: querydata.QuotationId,
+        Type: querydata.Type,
+      }
+      const data = await (req as any).knex.raw(getfollowup,[
+        params.Usercode,
+        params.InquiryId,
+        params.QuotationId,
+        params.Type
+      ]);
+      res.status(200).json(data);
+    }catch(err:any){
+      res.status(500).json({error:err.message})
+    }
+  }
+)
+
+userRouter.get(
   "/followup/inquiry/get",
   authenticateJWT,
   setDatabaseConnection,
   async (req: Request, res: Response) => {
-    const data = await (req as any).knex.raw(getfollowupinquiry, [
-      req.body.user.uid,
-    ]);
-    res.json(data);
+    try{
+      const data = await (req as any).knex.raw(getfollowupinquiry, [
+        req.body.user.uid,
+      ]);
+      res.status(200).json(data);
+    }catch(err:any){
+      res.status(500).json({error:err.message})
+    }
   }
 );
 
@@ -272,12 +303,15 @@ userRouter.get(
   authenticateJWT,
   setDatabaseConnection,
   async (req: Request, res: Response) => {
-    const data = await (req as any).knex.raw(getfollowupquotation, [
-      req.body.user.uid,
-    ]);
-    res.json(data);
-  }
-);
+    try{
+      const data = await (req as any).knex.raw(getfollowupquotation, [
+        req.body.user.uid,
+      ]);
+      res.json(data);
+    }catch(err:any){
+      res.status(500).json({error:err.message})
+    }
+});
 
 userRouter.post(
   "/followup/inquiry/insert",

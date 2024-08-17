@@ -1,3 +1,11 @@
+export const getfollowup = `
+        EXEC [dbo].[CRM_GetAllFollowups]
+        @Usercode=?,
+	@SalesInquiryDetailsId=?,
+	@SalesQuotationDetailsId=?,
+	@FollowupType=?      
+`
+
 export const getfollowupinquiry = `
         EXEC [dbo].[CRM_SalesFollowupInquiryGetDetails]
         @UserCode = ?
