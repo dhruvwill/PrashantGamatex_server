@@ -18,48 +18,61 @@ import {
 } from "../queries/followup";
 import { uploadFiles } from "../middleware/uploadFiles";
 import { expensegetdetailsquery, expenseinsertquery } from "../queries/expense";
-import { dashboardanalytics,leadreminddate,followupnextdatetime } from "../queries/homepage";
+import {
+  dashboardanalytics,
+  leadreminddate,
+  followupnextdatetime,
+} from "../queries/homepage";
 
 const userRouter = Router();
 
 userRouter.get(
-  "/dashboard/get", 
+  "/dashboard/get",
   authenticateJWT,
-  setDatabaseConnection, 
+  setDatabaseConnection,
   async (req: Request, res: Response) => {
-    try{
-      const data = await (req as any).knex.raw(dashboardanalytics, [req.body.user.uid]);
+    try {
+      const data = await (req as any).knex.raw(dashboardanalytics, [
+        req.body.user.uid,
+      ]);
       res.status(200).json(data);
-    }catch(err:any){
-      res.status(500).json({error:err.message})
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
     }
-  })
+  }
+);
 
 userRouter.get(
-  "/leadreminddate/get", 
-  authenticateJWT, 
-  setDatabaseConnection, 
+  "/leadreminddate/get",
+  authenticateJWT,
+  setDatabaseConnection,
   async (req: Request, res: Response) => {
-    try{
-      const data = await (req as any).knex.raw(leadreminddate, [req.body.user.uid]);
+    try {
+      const data = await (req as any).knex.raw(leadreminddate, [
+        req.body.user.uid,
+      ]);
       res.status(200).json(data);
-    }catch(err:any){
-      res.status(500).json({error:err.message})
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
     }
-})
+  }
+);
 
 userRouter.get(
-  "/followupnextdatetime/get", 
-  authenticateJWT, 
-  setDatabaseConnection, 
+  "/followupnextdatetime/get",
+  authenticateJWT,
+  setDatabaseConnection,
   async (req: Request, res: Response) => {
-    try{
-      const data = await (req as any).knex.raw(followupnextdatetime, [req.body.user.uid]);
+    try {
+      const data = await (req as any).knex.raw(followupnextdatetime, [
+        req.body.user.uid,
+      ]);
       res.status(200).json(data);
-    }catch(err:any){
-      res.status(500).json({error:err.message})
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
     }
-})
+  }
+);
 
 userRouter.get(
   "/lead/get",
@@ -159,8 +172,6 @@ userRouter.post(
       const querydata = req.body;
       const files = req.files as Express.Multer.File[];
 
-      console.log("Data: ", req.body);
-
       const savedFiles = files.map((file) => {
         const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
         const filename = `${req.body.user.uid}_${uniqueSuffix}${path.extname(
@@ -182,7 +193,6 @@ userRouter.post(
       });
 
       const filePaths = savedFiles.map((file) => file.filename).join(",");
-      console.log(filePaths);
 
       const userId_categoryId_currencyId_data = await (req as any).knex.raw(
         getuserIdCategoryIdquery,
@@ -247,7 +257,6 @@ userRouter.post(
       if (data[0].Output == 0) {
         throw new Error("Error while inserting lead, Please Try again");
       }
-      console.log("Data: ", data);
       res.status(200).json(data);
     } catch (err: any) {
       console.log("Error: ", err);
@@ -261,39 +270,39 @@ userRouter.get(
   authenticateJWT,
   setDatabaseConnection,
   async (req: Request, res: Response) => {
-    try{
-      const querydata = req.body;
+    try {
+      const querydata = req.query;
       const params = {
         Usercode: req.body.user.uid,
-        InquiryId: querydata.InquiryId,
-        QuotationId: querydata.QuotationId,
-        Type: querydata.Type,
-      }
-      const data = await (req as any).knex.raw(getfollowup,[
+        InquiryId: Number(querydata.SalesInquiryId),
+        QuotationId: Number(querydata.SalesQuotationId),
+        Type: querydata.type,
+      };
+      const data = await (req as any).knex.raw(getfollowup, [
         params.Usercode,
         params.InquiryId,
         params.QuotationId,
-        params.Type
+        params.Type,
       ]);
       res.status(200).json(data);
-    }catch(err:any){
-      res.status(500).json({error:err.message})
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
     }
   }
-)
+);
 
 userRouter.get(
   "/followup/inquiry/get",
   authenticateJWT,
   setDatabaseConnection,
   async (req: Request, res: Response) => {
-    try{
+    try {
       const data = await (req as any).knex.raw(getfollowupinquiry, [
         req.body.user.uid,
       ]);
       res.status(200).json(data);
-    }catch(err:any){
-      res.status(500).json({error:err.message})
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
     }
   }
 );
@@ -303,15 +312,16 @@ userRouter.get(
   authenticateJWT,
   setDatabaseConnection,
   async (req: Request, res: Response) => {
-    try{
+    try {
       const data = await (req as any).knex.raw(getfollowupquotation, [
         req.body.user.uid,
       ]);
       res.json(data);
-    }catch(err:any){
-      res.status(500).json({error:err.message})
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
     }
-});
+  }
+);
 
 userRouter.post(
   "/followup/inquiry/insert",
@@ -497,7 +507,6 @@ userRouter.post(
       const querydata = req.body;
 
       const uploadedFiles = req.files as Express.Multer.File[];
-      console.log("Files: ", uploadedFiles);
 
       const filePaths: string[] = new Array(querydata.expenseItems.length).fill(
         ""
@@ -533,9 +542,6 @@ userRouter.post(
         };
       });
 
-      console.log("File paths: ", filePaths);
-
-      console.log("Data: ", querydata);
       const companyName = querydata.customerCompany;
       const visitDate = querydata.visitDate;
       const userCode = querydata.user.uid;
