@@ -33,8 +33,8 @@ userRouter.get(
     try {
       // Aie time frame avse and as parameter pass karvu che
       const data = await (req as any).knex.raw(dashboardanalytics, [
-        req.query.timeframe,
         req.body.user.uid,
+        req.query.timeframe
       ]);
       res.status(200).json(data);
     } catch (err: any) {
