@@ -1,14 +1,10 @@
 export const dashboardanalytics = `
     EXEC [CRM_GetDashboardAnalytics]
-        @Usercode= ?
+        @Usercode= ?,
+        @Timeframe=?
 `
 
-export const leadreminddate = `
-    EXEC [CRM_GetLeadRemindDate]
-        @Usercode= ?
-`
-
-export const followupnextdatetime = `
-    EXEC [CRM_GetFollowupNextVisitDate]
+export const getcalender = `
+    EXEC [CRM_GetCalenderDates]
         @Usercode= ?
 `

@@ -20,8 +20,7 @@ import { uploadFiles } from "../middleware/uploadFiles";
 import { expensegetdetailsquery, expenseinsertquery } from "../queries/expense";
 import {
   dashboardanalytics,
-  leadreminddate,
-  followupnextdatetime,
+  getcalender
 } from "../queries/homepage";
 
 const userRouter = Router();
@@ -32,7 +31,9 @@ userRouter.get(
   setDatabaseConnection,
   async (req: Request, res: Response) => {
     try {
+      // Aie time frame avse and as parameter pass karvu che
       const data = await (req as any).knex.raw(dashboardanalytics, [
+        req.query.timeframe,
         req.body.user.uid,
       ]);
       res.status(200).json(data);
@@ -43,31 +44,31 @@ userRouter.get(
 );
 
 userRouter.get(
-  "/leadreminddate/get",
+  "/calender/dates",
   authenticateJWT,
   setDatabaseConnection,
   async (req: Request, res: Response) => {
     try {
-      const data = await (req as any).knex.raw(leadreminddate, [
+      const rawData = await (req as any).knex.raw(getcalender, [
         req.body.user.uid,
       ]);
-      res.status(200).json(data);
-    } catch (err: any) {
-      res.status(500).json({ error: err.message });
-    }
-  }
-);
-
-userRouter.get(
-  "/followupnextdatetime/get",
-  authenticateJWT,
-  setDatabaseConnection,
-  async (req: Request, res: Response) => {
-    try {
-      const data = await (req as any).knex.raw(followupnextdatetime, [
-        req.body.user.uid,
-      ]);
-      res.status(200).json(data);
+      const formattedData = rawData.reduce((acc: Record<string, any[]>, item: any) => {
+        const { Date: date, MachineName: machineName, PartyName: partyName, Time: time } = item;
+        
+        if (!acc[date]) {
+          acc[date] = [];
+        }
+    
+        acc[date].push({
+          machineName,
+          partyName,
+          time
+        });
+    
+        return acc;
+      }, {});
+    
+      res.status(200).json(formattedData);
     } catch (err: any) {
       res.status(500).json({ error: err.message });
     }
