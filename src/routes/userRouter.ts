@@ -18,10 +18,7 @@ import {
 } from "../queries/followup";
 import { uploadFiles } from "../middleware/uploadFiles";
 import { expensegetdetailsquery, expenseinsertquery } from "../queries/expense";
-import {
-  dashboardanalytics,
-  getcalender
-} from "../queries/homepage";
+import { dashboardanalytics, getcalender } from "../queries/homepage";
 
 const userRouter = Router();
 
@@ -31,10 +28,11 @@ userRouter.get(
   setDatabaseConnection,
   async (req: Request, res: Response) => {
     try {
+      console.log(req.query.timeframe);
       // Aie time frame avse and as parameter pass karvu che
       const data = await (req as any).knex.raw(dashboardanalytics, [
         req.body.user.uid,
-        req.query.timeframe
+        req.query.timeframe,
       ]);
       res.status(200).json(data);
     } catch (err: any) {
@@ -44,30 +42,39 @@ userRouter.get(
 );
 
 userRouter.get(
-  "/calender/dates",
+  "/calendar/dates",
   authenticateJWT,
   setDatabaseConnection,
   async (req: Request, res: Response) => {
     try {
+      console.log("calenar req received");
       const rawData = await (req as any).knex.raw(getcalender, [
         req.body.user.uid,
       ]);
-      const formattedData = rawData.reduce((acc: Record<string, any[]>, item: any) => {
-        const { Date: date, MachineName: machineName, PartyName: partyName, Time: time } = item;
-        
-        if (!acc[date]) {
-          acc[date] = [];
-        }
-    
-        acc[date].push({
-          machineName,
-          partyName,
-          time
-        });
-    
-        return acc;
-      }, {});
-    
+      const formattedData = rawData.reduce(
+        (acc: Record<string, any[]>, item: any) => {
+          const {
+            Date: date,
+            MachineName: machineName,
+            PartyName: partyName,
+            Time: time,
+          } = item;
+
+          if (!acc[date]) {
+            acc[date] = [];
+          }
+
+          acc[date].push({
+            machineName,
+            partyName,
+            time,
+          });
+
+          return acc;
+        },
+        {}
+      );
+
       res.status(200).json(formattedData);
     } catch (err: any) {
       res.status(500).json({ error: err.message });
