@@ -19,6 +19,8 @@ import {
 import { uploadFiles } from "../middleware/uploadFiles";
 import { expensegetdetailsquery, expenseinsertquery } from "../queries/expense";
 import { dashboardanalytics, getcalender } from "../queries/homepage";
+import { IMAGE_BASE_PATH } from "../config/constants";
+import checkFilePath from "../middleware/checkFilePath";
 
 const userRouter = Router();
 
@@ -185,10 +187,7 @@ userRouter.post(
         const filename = `${req.body.user.uid}_${uniqueSuffix}${path.extname(
           file.originalname
         )}`;
-        const filepath = path.join(
-          "C:\\Program Files (x86)\\Nutec Infotech Pvt Ltd\\DigitalSignaturePdfFile\\CRM\\LEAD",
-          filename
-        );
+        const filepath = path.join(IMAGE_BASE_PATH, filename);
 
         fs.writeFileSync(filepath, file.buffer);
 
@@ -199,6 +198,8 @@ userRouter.post(
           size: file.size,
         };
       });
+
+      console.log("lead files: ", savedFiles);
 
       const filePaths = savedFiles.map((file) => file.filename).join(",");
 
@@ -270,6 +271,40 @@ userRouter.post(
       console.log("Error: ", err);
       res.status(500).json({ error: err.message });
     }
+  }
+);
+
+userRouter.get(
+  "/images/:filename",
+  checkFilePath,
+  (req: Request, res: Response) => {
+    const filename = req.params.filename;
+    const filePath = path.join(IMAGE_BASE_PATH, filename);
+
+    // Check if file exists
+    fs.access(filePath, fs.constants.F_OK, (err) => {
+      if (err) {
+        console.error(err, filePath);
+        return res.status(404).send("Image not found");
+      }
+
+      // Set appropriate content type
+      const ext = path.extname(filename).toLowerCase();
+      const contentType =
+        {
+          ".png": "image/png",
+          ".jpg": "image/jpeg",
+          ".jpeg": "image/jpeg",
+          ".gif": "image/gif",
+          ".webp": "image/webp",
+        }[ext] || "application/octet-stream";
+
+      res.set("Content-Type", contentType);
+
+      // Stream the file
+      const stream = fs.createReadStream(filePath);
+      stream.pipe(res);
+    });
   }
 );
 
