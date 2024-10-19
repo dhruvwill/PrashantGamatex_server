@@ -19,7 +19,7 @@ import {
 import { uploadFiles } from "../middleware/uploadFiles";
 import { expensegetdetailsquery, expenseinsertquery } from "../queries/expense";
 import { dashboardanalytics, getcalender } from "../queries/homepage";
-import { IMAGE_BASE_PATH } from "../config/constants";
+import { FOLLOWUP_IMAGE_BASE_PATH, IMAGE_BASE_PATH } from "../config/constants";
 import checkFilePath from "../middleware/checkFilePath";
 
 const userRouter = Router();
@@ -31,7 +31,6 @@ userRouter.get(
   async (req: Request, res: Response) => {
     try {
       console.log(req.query.timeframe);
-      // Aie time frame avse and as parameter pass karvu che
       const data = await (req as any).knex.raw(dashboardanalytics, [
         req.body.user.uid,
         req.query.timeframe,
@@ -276,10 +275,30 @@ userRouter.post(
 
 userRouter.get(
   "/images/:filename",
+  authenticateJWT,
+  setDatabaseConnection,
   checkFilePath,
   (req: Request, res: Response) => {
+    const company = req.body.user.company;
+    let companyPath;
+    switch (company) {
+      case "PrashantGamatex":
+        companyPath = "//PGPL_Temp//";
+        break;
+      case "Ferber":
+        companyPath = "//PFPL//";
+        break;
+      case "WestPoint":
+        companyPath = "//PWPL//";
+        break;
+      default:
+        companyPath = "//PGPL_Temp//";
+        break;
+    }
+
+
     const filename = req.params.filename;
-    const filePath = path.join(IMAGE_BASE_PATH, filename);
+    const filePath = path.join(FOLLOWUP_IMAGE_BASE_PATH, companyPath, filename);
 
     // Check if file exists
     fs.access(filePath, fs.constants.F_OK, (err) => {
