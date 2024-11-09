@@ -135,6 +135,7 @@ userRouter.patch(
         UDF_CustomerApplication_2361: querydata.customerApplication,
         UDF_CustomerExistingMachine_2361: querydata.customerExistingMachine,
         UDF_LeadNotes_2361: querydata.leadNote,
+        UDF_CustomerAdd_2361: querydata.address,
       };
       const data = await (req as any).knex.raw(leadinsertquery, [
         mode,
@@ -160,6 +161,7 @@ userRouter.patch(
         params.UDF_CustomerApplication_2361,
         params.UDF_CustomerExistingMachine_2361,
         params.UDF_LeadNotes_2361,
+        params.UDF_CustomerAdd_2361,
       ]);
       if (data[0].Output == 0) {
         throw new Error("Error while updating lead, Please Try again");
@@ -236,6 +238,7 @@ userRouter.post(
         UDF_CustomerApplication_2361: querydata.customerApplication,
         UDF_CustomerExistingMachine_2361: querydata.customerExistingMachine,
         UDF_LeadNotes_2361: querydata.leadNote,
+        UDF_CustomerAdd_2361: querydata.address,
       };
       const data = await (req as any).knex.raw(leadinsertquery, [
         mode,
@@ -261,6 +264,7 @@ userRouter.post(
         params.UDF_CustomerApplication_2361,
         params.UDF_CustomerExistingMachine_2361,
         params.UDF_LeadNotes_2361,
+        params.UDF_CustomerAdd_2361,
       ]);
       if (data[0].Output == 0) {
         throw new Error("Error while inserting lead, Please Try again");

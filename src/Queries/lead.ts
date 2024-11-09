@@ -24,6 +24,7 @@ export const leadinsertquery = `
           @UDF_CustomerApplication_2361 = ?, 
           @UDF_CustomerExistingMachine_2361 = ?, 
           @UDF_LeadNotes_2361 = ?,
+          @UDF_CustomerAdd_2361=?,
           @Output = @Output OUTPUT;
         SELECT @Output AS Output;
       `;
@@ -52,6 +53,7 @@ export const leadupdatequery = `
           @UDF_CustomerApplication_2361 = ?, 
           @UDF_CustomerExistingMachine_2361 = ?, 
           @UDF_LeadNotes_2361 = ?,
+          @UDF_CustomerAdd_2361=?,
           @Output = @Output OUTPUT;
         SELECT @Output AS Output;
       `;
