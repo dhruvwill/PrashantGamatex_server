@@ -332,6 +332,43 @@ userRouter.get(
 );
 
 userRouter.get(
+  "/lead/images/:filename",
+  authenticateJWT,
+  setDatabaseConnection,
+  checkFilePath,
+  (req: Request, res: Response) => {
+
+    const filename = "\\"+req.params.filename;
+    const filePath = path.join(IMAGE_BASE_PATH, filename);
+
+    // Check if file exists
+    fs.access(filePath, fs.constants.F_OK, (err) => {
+      if (err) {
+        console.error(err, filePath);
+        return res.status(404).send("Image not found");
+      }
+
+      // Set appropriate content type
+      const ext = path.extname(filename).toLowerCase();
+      const contentType =
+        {
+          ".png": "image/png",
+          ".jpg": "image/jpeg",
+          ".jpeg": "image/jpeg",
+          ".gif": "image/gif",
+          ".webp": "image/webp",
+        }[ext] || "application/octet-stream";
+
+      res.set("Content-Type", contentType);
+
+      // Stream the file
+      const stream = fs.createReadStream(filePath);
+      stream.pipe(res);
+    });
+  }
+);
+
+userRouter.get(
   "/followup/get",
   authenticateJWT,
   setDatabaseConnection,
