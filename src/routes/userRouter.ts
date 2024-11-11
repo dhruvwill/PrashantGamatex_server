@@ -18,7 +18,7 @@ import {
 } from "../queries/followup";
 import { uploadFiles } from "../middleware/uploadFiles";
 import { expensegetdetailsquery, expenseinsertquery } from "../queries/expense";
-import { dashboardanalytics, getcalender } from "../queries/homepage";
+import { changepassword, dashboardanalytics, getcalender } from "../queries/homepage";
 import { FOLLOWUP_IMAGE_BASE_PATH, IMAGE_BASE_PATH } from "../config/constants";
 import checkFilePath from "../middleware/checkFilePath";
 
@@ -78,6 +78,34 @@ userRouter.get(
 
       res.status(200).json(formattedData);
     } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  }
+);
+
+userRouter.patch(
+  "/password", 
+  authenticateJWT, 
+  setDatabaseConnection, 
+  async (req: Request, res: Response) => {
+    try{
+      const querydata = req.body;
+
+      const data = await (req as any).knex.raw(changepassword,[
+        req.body.user.uid,
+        querydata.oldpassword,
+        querydata.newpassword
+      ])
+
+      if (data[0].Output == 0){
+        return res.status(400).json({error: "Some error occured while changing password"})
+      }
+      if (data[0].Output == -1){
+        return res.status(400).json({error: "Old password is incorrect"})
+      }
+      res.status(200).json(data)
+    }catch(err : any){
+      console.log("Error: ", err);
       res.status(500).json({ error: err.message });
     }
   }

@@ -8,7 +8,9 @@ const secret: string = process.env.JWT_SECRET!;
 
 authRouter.post("/login", setDatabaseConnection, async (req: any, res: any) => {
   try {
-    const data = await req.knex.raw(userloginquery, [req.body.user.username, req.body.user.password]);
+    const querydata = req.body
+    
+    const data = await req.knex.raw(userloginquery, [req.body.user.username, req.body.user.password, " "]);
     if (data.length > 0) {
       const payload = {
         ...data[0],
