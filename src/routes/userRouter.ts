@@ -89,15 +89,18 @@ userRouter.patch(
   async (req: Request, res: Response) => {
     try{
       const querydata = req.body;
+      console.log("pass querydata: ", querydata);
 
-      const data = await (req as any).knex.raw(changepassword,[
+      const data = await(req as any).knex.raw(changepassword, [
         req.body.user.uid,
-        querydata.oldpassword,
-        querydata.newpassword
-      ])
+        querydata.currentPassword,
+        querydata.newPassword,
+      ]);
 
       if (data[0].Output == 0){
-        return res.status(400).json({error: "Some error occured while changing password"})
+        return res
+          .status(400)
+          .json({ error: "Failed to change password. Please try again." });
       }
       if (data[0].Output == -1){
         return res.status(400).json({error: "Old password is incorrect"})
