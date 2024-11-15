@@ -30,7 +30,6 @@ userRouter.get(
   setDatabaseConnection,
   async (req: Request, res: Response) => {
     try {
-      console.log(req.query.timeframe);
       const data = await (req as any).knex.raw(dashboardanalytics, [
         req.body.user.uid,
         req.query.timeframe,

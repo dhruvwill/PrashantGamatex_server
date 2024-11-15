@@ -14,7 +14,7 @@ const checkFilePath = (
   const filePath = path.join(FOLLOWUP_IMAGE_BASE_PATH, filename);
 
   // Ensure the file path is within the allowed directory
-  if (!filePath.startsWith(FOLLOWUP_IMAGE_BASE_PATH) || !filePath.startsWith(IMAGE_BASE_PATH)) {
+  if (!filePath.startsWith(FOLLOWUP_IMAGE_BASE_PATH) && !filePath.startsWith(IMAGE_BASE_PATH)) {
     return res.status(403).send("Access denied");
   }
 
