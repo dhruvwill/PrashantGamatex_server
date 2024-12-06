@@ -1,9 +1,10 @@
 module.exports = {
   apps: [
     {
-      name: "Prasad Group",
+      name: "Prashant Group",
       script: "./dist/index.js",
-      watch: ".",
+      watch: ["dist"],
+      ignore_watch: ["node_modules", "logs"],
       env: {
         PORT: 3000,
         JWT_SECRET: "PRA$H@NTG@M@T3X",
