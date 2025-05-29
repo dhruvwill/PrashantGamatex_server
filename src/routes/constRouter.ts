@@ -2,6 +2,7 @@ import { Router, Request, Response } from "express";
 import { setDatabaseConnection } from "../middleware/setDatabase";
 import {
   constantsquery,
+  getAssociatedUsers,
   getcategoryfollowup,
   getdocumentnofollowupquery,
   getdocumentnoleadquery,
@@ -93,5 +94,21 @@ constRouter.get(
     }
   }
 );
+
+constRouter.get(
+  "/lead/associatedusers",
+  authenticateJWT,
+  setDatabaseConnection,
+  async (req: Request, res: Response) => {
+    try {
+      const data = await (req as any).knex.raw(getAssociatedUsers,
+        [req.body.user.uid]
+      );
+      res.status(200).json(data);
+    } catch (err: any) {
+      res.status(500).json({ message: err.message });
+    }
+  }
+)
 
 export default constRouter;

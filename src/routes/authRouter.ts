@@ -10,11 +10,11 @@ authRouter.post("/login", setDatabaseConnection, async (req: any, res: any) => {
   try {
     const querydata = req.body;
     
-    const data = await req.knex.raw(userloginquery, [req.body.user.username, req.body.user.password, req.body.user.DeviceName]);
+    const data = await req.knex.raw(userloginquery, [querydata.user.username, querydata.user.password, querydata.user.DeviceName || "Mobile"]);
     if (data.length > 0) {
       const payload = {
         ...data[0],
-        company: req.body.user.company,
+        company: querydata.user.company,
       };
       const token = sign(payload, secret, { expiresIn: "1h" });
       res.status(200).json({ payload, token });
