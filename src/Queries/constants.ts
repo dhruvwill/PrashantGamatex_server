@@ -26,3 +26,13 @@ export const getcategoryfollowup = `
         EXEC [dbo].[CRM_SalesFollowupFetchCategoryValues]
                 @UserCode = ?
 `;
+
+export const getAssociatedUsersLead = `
+        EXEC [dbo].[CRM_GetAssociatedUsersDropdownLeads]
+	@UserCode=?
+`
+
+export const getAssociatedUsersFollowup = `
+        EXEC [dbo].[CRM_GetAssociatedUsersDropdownFollowup]
+	@UserCode=?
+`
