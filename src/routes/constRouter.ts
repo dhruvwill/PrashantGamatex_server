@@ -2,7 +2,8 @@ import { Router, Request, Response } from "express";
 import { setDatabaseConnection } from "../middleware/setDatabase";
 import {
   constantsquery,
-  getAssociatedUsers,
+  getAssociatedUsersFollowup,
+  getAssociatedUsersLead,
   getcategoryfollowup,
   getdocumentnofollowupquery,
   getdocumentnoleadquery,
@@ -101,7 +102,23 @@ constRouter.get(
   setDatabaseConnection,
   async (req: Request, res: Response) => {
     try {
-      const data = await (req as any).knex.raw(getAssociatedUsers,
+      const data = await (req as any).knex.raw(getAssociatedUsersLead,
+        [req.body.user.uid]
+      );
+      res.status(200).json(data);
+    } catch (err: any) {
+      res.status(500).json({ message: err.message });
+    }
+  }
+)
+
+constRouter.get(
+  "/followup/associatedusers",
+  authenticateJWT,
+  setDatabaseConnection,
+  async (req: Request, res: Response) => {
+    try {
+      const data = await (req as any).knex.raw(getAssociatedUsersFollowup,
         [req.body.user.uid]
       );
       res.status(200).json(data);

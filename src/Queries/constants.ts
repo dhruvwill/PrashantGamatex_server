@@ -27,7 +27,12 @@ export const getcategoryfollowup = `
                 @UserCode = ?
 `;
 
-export const getAssociatedUsers = `
-        EXEC [dbo].[CRM_GetAssociatedUsersDropdown]
+export const getAssociatedUsersLead = `
+        EXEC [dbo].[CRM_GetAssociatedUsersDropdownLeads]
+	@UserCode=?
+`
+
+export const getAssociatedUsersFollowup = `
+        EXEC [dbo].[CRM_GetAssociatedUsersDropdownFollowup]
 	@UserCode=?
 `
