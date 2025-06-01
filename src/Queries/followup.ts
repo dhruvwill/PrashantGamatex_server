@@ -80,3 +80,8 @@ export const followupquotationinsertquery = `
             
         SELECT @Output AS Output;
 `;
+
+export const CRM_GetAllQuotationReminders = `
+        EXEC [dbo].[CRM_GetAllQuotationReminders]
+        @UserCode = ?
+`
