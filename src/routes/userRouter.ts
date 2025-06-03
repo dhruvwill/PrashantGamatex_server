@@ -15,6 +15,7 @@ import {
   followupquotationinsertquery,
   getUseridCategoryidfollowup,
   getfollowup,
+  CRM_GetAllQuotationReminders,
 } from "../queries/followup";
 import { uploadFiles } from "../middleware/uploadFiles";
 import { expensegetdetailsquery, expenseinsertquery } from "../queries/expense";
@@ -713,5 +714,22 @@ userRouter.post(
     }
   }
 );
+
+userRouter.get(
+  "/quotation/reminders",
+  authenticateJWT,
+  setDatabaseConnection,
+  async (req: Request, res: Response) => {
+    try {
+      const data = await (req as any).knex.raw(
+       CRM_GetAllQuotationReminders,
+        [req.body.user.uid]
+      );
+      res.status(200).json(data);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  }
+)
 
 export default userRouter;
