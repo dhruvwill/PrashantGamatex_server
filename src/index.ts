@@ -1,11 +1,15 @@
 import express, { Express, Request, Response } from "express";
 import cors from "cors";
+import multer from "multer";
+import path from "path";
 import authRouter from "./routes/authRouter";
 import userRouter from "./routes/userRouter";
 import constRouter from "./routes/constRouter";
+import notificationRouter from "./routes/notificationRouter";
 import { noCache } from "./middleware/preventCache";
-import multer from "multer";
-import path from "path";
+// Import the required services
+import { FirebaseMessagingService } from './services/FirebaseMessagingService';
+import { NotificationSchedulerService } from './services/NotificationSchedulerService';
 
 const app: Express = express();
 const port = process.env.PORT || 3000;
@@ -29,15 +33,44 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(noCache);
 
+// Initialize notification scheduler
+const setupNotificationScheduler = () => {
+  const messagingService = new FirebaseMessagingService();
+  const schedulerService = new NotificationSchedulerService(messagingService);
+  
+  schedulerService.initialize();
+  
+  // Handle graceful shutdown
+  process.on('SIGINT', () => {
+    console.log('Stopping notification scheduler...');
+    schedulerService.stopAllTasks();
+    process.exit(0);
+  });
+  
+  process.on('SIGTERM', () => {
+    console.log('Stopping notification scheduler...');
+    schedulerService.stopAllTasks();
+    process.exit(0);
+  });
+  
+  return schedulerService;
+};
+
 // routes
 app.use("/auth", authRouter);
 app.use("/user", userRouter);
 app.use("/const", constRouter);
+app.use("/notifications", notificationRouter);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Express + TS Server Prasad Group");
 });
 
+// Initialize the server
 app.listen(port, () => {
   console.log(`[server]: Server is running at http://localhost:${port}`);
+  
+  // Start the notification scheduler after the server is running
+  const scheduler = setupNotificationScheduler();
+  console.log('Notification scheduler is running');
 });

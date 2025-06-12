@@ -15,12 +15,17 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/node-schedule": "^2.1.7",
     "cors": "^2.8.5",
     "express": "^4.19.2",
+    "firebase": "^11.9.1",
+    "firebase-admin": "^13.4.0",
     "jsonwebtoken": "^9.0.2",
     "knex": "^3.1.0",
     "mssql": "^10.0.2",
     "multer": "^1.4.5-lts.1",
+    "node-cron": "^4.1.0",
+    "node-schedule": "^2.1.1",
     "tedious": "^18.2.0"
   },
   "devDependencies": {
@@ -29,6 +34,7 @@
     "@types/jsonwebtoken": "^9.0.6",
     "@types/multer": "^1.4.11",
     "@types/node": "^20.14.2",
+    "@types/node-cron": "^3.0.11",
     "swagger-autogen": "^2.23.7",
     "typescript": "^5.4.5"
   }
