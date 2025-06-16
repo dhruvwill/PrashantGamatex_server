@@ -83,5 +83,4 @@ export const followupquotationinsertquery = `
 
 export const CRM_GetAllQuotationReminders = `
         EXEC [dbo].[CRM_GetAllQuotationReminders]
-        @UserCode = ?
-`
+`;

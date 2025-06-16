@@ -9,7 +9,7 @@ const messagingService = new FirebaseMessagingService();
 // Send notification to a specific device
 notificationRouter.post(
   "/send/device",
-  // authenticateJWT,
+  authenticateJWT,
   async (req: Request, res: Response) => {
     try {
       const { token, title, body, data } = req.body;

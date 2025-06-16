@@ -722,9 +722,7 @@ userRouter.get(
   async (req: Request, res: Response) => {
     try {
       const data = await (req as any).knex.raw(
-       CRM_GetAllQuotationReminders,
-        [req.body.user.uid]
-      );
+       CRM_GetAllQuotationReminders);
       res.status(200).json(data);
     } catch (err: any) {
       res.status(500).json({ error: err.message });
