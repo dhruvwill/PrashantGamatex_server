@@ -197,7 +197,10 @@ userRouter.patch(
         params.UDF_CustomerAdd_2361,
       ]);
       if (data[0].Output == 0) {
-        throw new Error("Error while updating lead, Please Try again");
+        throw new Error(
+          data[0].ErrorMessage ||
+          "Error while updating lead, Please Try again"
+        );
       }
       res.status(200).json(data);
     } catch (err: any) {
@@ -298,7 +301,10 @@ userRouter.post(
         params.UDF_CustomerAdd_2361,
       ]);
       if (data[0].Output == 0) {
-        throw new Error("Error while inserting lead, Please Try again");
+        throw new Error(
+          data[0].ErrorMessage ||
+          "Error while inserting lead, Please Try again"
+        );
       }
       res.status(200).json(data);
     } catch (err: any) {
@@ -611,12 +617,13 @@ userRouter.post(
       ]);
       if (data[0].Output == 0) {
         throw new Error(
+          data[0].ErrorMessage ||
           "Error while inserting quotation followup, Please Try again"
         );
       }
       res.status(200).json(data);
     } catch (err: any) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({error: err.message });
     }
   }
 );

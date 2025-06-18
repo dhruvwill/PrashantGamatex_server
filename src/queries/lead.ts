@@ -1,5 +1,6 @@
 export const leadinsertquery = `
         DECLARE @Output INT;
+        DECLARE @ErrorMessage NVARCHAR(4000);
         EXEC [dbo].[CRM_RefrenceTransactionDetailsInsertUpdateSP_2361]
           @Mode = ?, 
           @CompanyName = ?,
@@ -26,7 +27,8 @@ export const leadinsertquery = `
           @UDF_LeadNotes_2361 = ?,
           @UDF_CustomerAdd_2361=?,
           @Output = @Output OUTPUT;
-        SELECT @Output AS Output;
+          @ErrorMessage = @ErrorMessage OUTPUT;
+        SELECT @Output AS Output, @ErrorMessage AS ErrorMessage;
       `;
 
 export const leadupdatequery = `
