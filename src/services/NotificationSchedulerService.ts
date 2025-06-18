@@ -4,6 +4,7 @@ import { IMessagingService } from '../interfaces/IMessagingService';
 import { Notification } from '../models/notification';
 import { getKnexInstance } from '../db';
 import { CRM_GetAllQuotationReminders } from '../queries/followup';
+import { CRM_GetAllLeadReminders } from '../queries/lead';
 
 export class NotificationSchedulerService implements ISchedulerService {
   private scheduledTasks: cron.ScheduledTask[] = [];
@@ -15,6 +16,8 @@ export class NotificationSchedulerService implements ISchedulerService {
   initialize(): void {
     // Example: Schedule a daily notification at 9:00 AM
     this.scheduleTask('0 9 * * *', this.sendHelloWorldNotification.bind(this));
+    // this.scheduleTask('* * * * *', this.sendQuotationFollowUpNotification.bind(this));
+    // this.scheduleTask('* * * * *', this.sendLeadFollowUpNotification.bind(this));
     console.log('Notification scheduler initialized successfully');
   }
 
@@ -36,8 +39,43 @@ export class NotificationSchedulerService implements ISchedulerService {
       const data = await knex.raw(
         CRM_GetAllQuotationReminders
       );
+      console.log('Quotation reminders data:', data);
     } catch (error) {
       console.error('Error sending quotation follow-up notification:', error);
+    }
+  }
+
+  private async sendLeadFollowUpNotification(): Promise<void> {
+    try {
+      const knex = getKnexInstance('PrashantGamatex');
+      const data = await knex.raw(
+        CRM_GetAllLeadReminders
+      );
+      console.log('Lead reminders data:', data);
+      // if (data && data.length > 0) {
+      //   for (const reminder of data) {
+      //     const notification: Notification = {
+      //       token: reminder.token, // Assuming the token is part of the reminder data
+      //       title: 'Lead Follow-Up Reminder',
+      //       body: `Reminder for lead: ${reminder.leadName} on ${reminder.reminderDate}`,
+      //       data: {
+      //         type: 'lead_reminder',
+      //         leadId: reminder.leadId,
+      //         reminderDate: reminder.reminderDate,
+      //       },
+      //     };
+      //     const result = await this.messagingService.sendToDevice(notification);
+      //     if (result.success) {
+      //       console.log(`Successfully sent lead follow-up notification for lead ID: ${reminder.leadId}`);
+      //     } else {
+      //       console.error(`Failed to send lead follow-up notification for lead ID: ${reminder.leadId}`);
+      //     }
+      //   }
+      // } else {
+      //   console.log('No lead reminders found to send notifications');
+      // }
+    } catch (error) {
+      console.error('Error sending lead follow-up notification:', error);
     }
   }
 

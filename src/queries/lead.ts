@@ -70,3 +70,24 @@ export const getleads = `
         EXEC [dbo].[CRM_ReferenceTransactionGetDetails_2361]
         @UserCode = ?
       `;
+
+export const leadFollowupInsertQuery = `
+  DECLARE @Output INT;
+  EXEC [dbo].[CRM_ReferenceTransaction_2361FollowupInsertSP]
+    @ReferenceTransaction_2361Id = ?,
+    @NextVisitDateTime = ?,
+    @FollowupStatus = ?,
+    @FollowupDateTime = ?,
+    @FollowupDetails = ?,
+    @CloseReason = ?,
+    @ModeofContact = ?,
+    @DetailDescription = ?,
+    @VisitTo = ?,
+    @VisitorPerson = ?,
+    @Output = @Output OUTPUT;
+  SELECT @Output AS Output;
+`;
+
+export const CRM_GetAllLeadReminders = `
+  EXEC [dbo].[CRM_GetAllLeadReminders]
+`
