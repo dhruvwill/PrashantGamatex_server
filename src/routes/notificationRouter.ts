@@ -2,9 +2,11 @@ import { Router, Request, Response } from "express";
 import { authenticateJWT } from "../middleware/authenticateJWT";
 import { FirebaseMessagingService } from "../services/FirebaseMessagingService";
 import { Notification } from "../models/notification";
+import { ExpoPushNotificationService } from "../services/ExpoMessagingService";
 
 const notificationRouter = Router();
 const messagingService = new FirebaseMessagingService();
+const expoService = new ExpoPushNotificationService();
 
 // Send notification to a specific device
 notificationRouter.post(
@@ -43,6 +45,70 @@ notificationRouter.post(
     } catch (error: any) {
       console.error("Error sending notification:", error);
       res.status(500).json({ error: error.message });
+    }
+  }
+);
+
+notificationRouter.post(
+  "expo/send/device",
+  authenticateJWT,
+  async (req: Request, res: Response) => {
+     try {
+      const { userCode, title, body, data } = req.body;
+
+      if (!userCode || !title || !body) {
+        return res.status(400).json({
+          success: false,
+          message: "userCode, title and body are required"
+        });
+      }
+
+      // Use your existing query to get the user's token
+      // This might be different in your actual implementation
+      const tokenResult = await (req as any).knex.raw(
+        "SELECT FcmToken as Token FROM dbo.UserMaster WHERE UserCode = ?",
+        [userCode]
+      );
+      
+      // Check if the token exists
+      if (!tokenResult || tokenResult.length === 0 || !tokenResult[0].Token) {
+        return res.status(404).json({
+          success: false,
+          message: "User has no registered token"
+        });
+      }
+
+      const token = tokenResult[0].Token;
+      
+      const notification: Notification = {
+        token,
+        title,
+        body,
+        data
+      };
+
+      // Replace FCM sending code with Expo sending code
+      const result = await expoService.sendToDevice(notification);
+
+      if (!result.success) {
+        return res.status(400).json({
+          success: false,
+          message: "Failed to send notification",
+          error: result.error
+        });
+      }
+
+      res.status(200).json({
+        success: true,
+        message: "Notification sent successfully"
+      });
+    } catch (error: any) {
+      console.error("Error sending notification:", error);
+      res.status(500).json({
+        success: false,
+        message: "An error occurred while sending notification",
+        error: error.message
+      });
     }
   }
 );
