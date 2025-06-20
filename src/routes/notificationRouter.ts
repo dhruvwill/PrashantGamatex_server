@@ -50,7 +50,7 @@ notificationRouter.post(
 );
 
 notificationRouter.post(
-  "expo/send/device",
+  "/expo/send/device",
   authenticateJWT,
   async (req: Request, res: Response) => {
      try {
