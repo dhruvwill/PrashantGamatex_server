@@ -10,7 +10,7 @@ authRouter.post("/login", setDatabaseConnection, async (req: any, res: any) => {
   try {
     const querydata = req.body;
     
-    const data = await req.knex.raw(userloginquery, [querydata.user.username, querydata.user.password, querydata.user.DeviceName || "Mobile"]);
+    const data = await req.knex.raw(userloginquery, [querydata.user.username, querydata.user.password, querydata.user.deviceName || "Mobile", querydata.user.pushToken || ""]);
     if (data.length > 0) {
       const payload = {
         ...data[0],
