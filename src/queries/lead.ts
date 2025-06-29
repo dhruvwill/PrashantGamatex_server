@@ -26,7 +26,7 @@ export const leadinsertquery = `
           @UDF_CustomerExistingMachine_2361 = ?, 
           @UDF_LeadNotes_2361 = ?,
           @UDF_CustomerAdd_2361=?,
-          @Output = @Output OUTPUT;
+          @Output = @Output OUTPUT,
           @ErrorMessage = @ErrorMessage OUTPUT;
         SELECT @Output AS Output, @ErrorMessage AS ErrorMessage;
       `;

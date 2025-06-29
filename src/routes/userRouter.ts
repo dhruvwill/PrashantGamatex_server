@@ -33,10 +33,24 @@ userRouter.get(
   setDatabaseConnection,
   async (req: Request, res: Response) => {
     try {
-      const data = await (req as any).knex.raw(dashboardanalytics, [
-        req.body.user.uid,
-        req.query.timeframe,
+      const [dashboard_data, lead_reminders_data, quotation_reminders_data] = await Promise.all([
+        (req as any).knex.raw(dashboardanalytics, [
+          req.body.user.uid,
+          req.query.timeframe,
+        ]),
+        (req as any).knex.raw(CRM_GetAllLeadReminders),
+        (req as any).knex.raw(CRM_GetAllQuotationReminders),
       ]);
+
+      const data = {
+        dashboard: dashboard_data,
+        leadReminders: lead_reminders_data.filter(
+          (reminder: any) => reminder.UserIdentification === req.body.user.uid
+        ),
+        quotationReminders: quotation_reminders_data.filter(
+          (reminder: any) => reminder.UserIdentification === req.body.user.uid
+        ),
+      }
       res.status(200).json(data);
     } catch (err: any) {
       res.status(500).json({ error: err.message });
@@ -50,10 +64,10 @@ userRouter.get(
   setDatabaseConnection,
   async (req: Request, res: Response) => {
     try {
-      console.log("calenar req received");
       const rawData = await (req as any).knex.raw(getcalender, [
         req.body.user.uid,
       ]);
+      res.status(200).json(rawData);
       const formattedData = rawData.reduce(
         (acc: Record<string, any[]>, item: any) => {
           const {
