@@ -21,7 +21,11 @@ import {
 } from "../queries/followup";
 import { uploadFiles } from "../middleware/uploadFiles";
 import { expensegetdetailsquery, expenseinsertquery } from "../queries/expense";
-import { changepassword, dashboardanalytics, getcalender } from "../queries/homepage";
+import {
+  changepassword,
+  dashboardanalytics,
+  getcalender,
+} from "../queries/homepage";
 import { FOLLOWUP_IMAGE_BASE_PATH, IMAGE_BASE_PATH } from "../config/constants";
 import checkFilePath from "../middleware/checkFilePath";
 
@@ -33,24 +37,27 @@ userRouter.get(
   setDatabaseConnection,
   async (req: Request, res: Response) => {
     try {
-      const [dashboard_data, lead_reminders_data, quotation_reminders_data] = await Promise.all([
-        (req as any).knex.raw(dashboardanalytics, [
-          req.body.user.uid,
-          req.query.timeframe,
-        ]),
-        (req as any).knex.raw(CRM_GetAllLeadReminders),
-        (req as any).knex.raw(CRM_GetAllQuotationReminders),
-      ]);
+      const [dashboard_data, lead_reminders_data, quotation_reminders_data] =
+        await Promise.all([
+          (req as any).knex.raw(dashboardanalytics, [
+            req.body.user.uid,
+            req.query.timeframe,
+          ]),
+          (req as any).knex.raw(CRM_GetAllLeadReminders),
+          (req as any).knex.raw(CRM_GetAllQuotationReminders),
+        ]);
+
+      const uid = req.body.user.uid;
 
       const data = {
         dashboard: dashboard_data,
-        leadReminders: lead_reminders_data.filter(
-          (reminder: any) => reminder.UserIdentification === req.body.user.uid
-        ),
-        quotationReminders: quotation_reminders_data.filter(
-          (reminder: any) => reminder.UserIdentification === req.body.user.uid
-        ),
-      }
+        leadReminders: lead_reminders_data
+          .filter((reminder: any) => reminder.UserCode === uid)
+          .map(({ FcmToken, ...rest }: { FcmToken: string; [key: string]: any }) => rest),
+        quotationReminders: quotation_reminders_data
+          .filter((reminder: any) => reminder.UserCode === uid)
+          .map(({ FcmToken, ...rest }: { FcmToken: string; [key: string]: any }) => rest),
+      };
       res.status(200).json(data);
     } catch (err: any) {
       res.status(500).json({ error: err.message });
@@ -67,7 +74,6 @@ userRouter.get(
       const rawData = await (req as any).knex.raw(getcalender, [
         req.body.user.uid,
       ]);
-      res.status(200).json(rawData);
       const formattedData = rawData.reduce(
         (acc: Record<string, any[]>, item: any) => {
           const {
@@ -106,8 +112,6 @@ userRouter.patch(
   async (req: Request, res: Response) => {
     try {
       const querydata = req.body;
-      console.log("pass querydata: ", querydata);
-
       const data = await (req as any).knex.raw(changepassword, [
         req.body.user.uid,
         querydata.currentPassword,
@@ -120,9 +124,9 @@ userRouter.patch(
           .json({ error: "Failed to change password. Please try again." });
       }
       if (data[0].Output == -1) {
-        return res.status(400).json({ error: "Old password is incorrect" })
+        return res.status(400).json({ error: "Old password is incorrect" });
       }
-      res.status(200).json(data)
+      res.status(200).json(data);
     } catch (err: any) {
       console.log("Error: ", err);
       res.status(500).json({ error: err.message });
@@ -212,8 +216,7 @@ userRouter.patch(
       ]);
       if (data[0].Output == 0) {
         throw new Error(
-          data[0].ErrorMessage ||
-          "Error while updating lead, Please Try again"
+          data[0].ErrorMessage || "Error while updating lead, Please Try again"
         );
       }
       res.status(200).json(data);
@@ -316,8 +319,7 @@ userRouter.post(
       ]);
       if (data[0].Output == 0) {
         throw new Error(
-          data[0].ErrorMessage ||
-          "Error while inserting lead, Please Try again"
+          data[0].ErrorMessage || "Error while inserting lead, Please Try again"
         );
       }
       res.status(200).json(data);
@@ -334,7 +336,6 @@ userRouter.get(
   setDatabaseConnection,
   checkFilePath,
   (req: Request, res: Response) => {
-
     const filename = "\\" + req.params.filename;
     const filePath = path.join(IMAGE_BASE_PATH, filename);
 
@@ -407,7 +408,7 @@ userRouter.post(
       res.status(500).json({ error: err.message });
     }
   }
-)
+);
 
 userRouter.get(
   "/lead/reminders",
@@ -415,15 +416,13 @@ userRouter.get(
   setDatabaseConnection,
   async (req: Request, res: Response) => {
     try {
-      const data = await (req as any).knex.raw(
-        CRM_GetAllLeadReminders);
+      const data = await (req as any).knex.raw(CRM_GetAllLeadReminders);
       res.status(200).json(data);
     } catch (err: any) {
       res.status(500).json({ error: err.message });
     }
   }
-)
-
+);
 
 userRouter.get(
   "/followup/get",
@@ -632,12 +631,12 @@ userRouter.post(
       if (data[0].Output == 0) {
         throw new Error(
           data[0].ErrorMessage ||
-          "Error while inserting quotation followup, Please Try again"
+            "Error while inserting quotation followup, Please Try again"
         );
       }
       res.status(200).json(data);
     } catch (err: any) {
-      res.status(500).json({error: err.message });
+      res.status(500).json({ error: err.message });
     }
   }
 );
@@ -748,14 +747,13 @@ userRouter.get(
   setDatabaseConnection,
   async (req: Request, res: Response) => {
     try {
-      const data = await (req as any).knex.raw(
-        CRM_GetAllQuotationReminders);
+      const data = await (req as any).knex.raw(CRM_GetAllQuotationReminders);
       res.status(200).json(data);
     } catch (err: any) {
       res.status(500).json({ error: err.message });
     }
   }
-)
+);
 
 userRouter.get(
   "/images/:filename",
@@ -779,7 +777,6 @@ userRouter.get(
         companyPath = "//PGPL_Temp//";
         break;
     }
-
 
     const filename = req.params.filename;
     const filePath = path.join(FOLLOWUP_IMAGE_BASE_PATH, companyPath, filename);
