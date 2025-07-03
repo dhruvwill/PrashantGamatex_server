@@ -9,6 +9,7 @@ import {
   getleads,
   leadFollowupInsertQuery,
   CRM_GetAllLeadReminders,
+  getleadupdates,
 } from "../queries/lead";
 import {
   getfollowupinquiry,
@@ -363,6 +364,16 @@ userRouter.get(
       const stream = fs.createReadStream(filePath);
       stream.pipe(res);
     });
+  }
+);
+
+userRouter.get(
+  "/lead/updates/:id",
+  authenticateJWT,
+  setDatabaseConnection,
+  async (req: Request, res: Response) => {
+    const data = await (req as any).knex.raw(getleadupdates, [req.params.id]);
+    res.json(data);
   }
 );
 

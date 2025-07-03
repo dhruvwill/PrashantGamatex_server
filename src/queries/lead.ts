@@ -93,3 +93,8 @@ export const leadFollowupInsertQuery = `
 export const CRM_GetAllLeadReminders = `
   EXEC [dbo].[CRM_GetAllLeadReminders]
 `
+
+export const getleadupdates = `
+  EXEC [dbo].[CRM_GetAllLeadUpdates]
+  @ReferenceTransaction_2361Id = ?
+`;
