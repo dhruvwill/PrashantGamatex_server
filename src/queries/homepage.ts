@@ -18,3 +18,9 @@ export const changepassword = `
         @Output = @Output OUTPUT
     SELECT @Output AS Output;
 `
+export const CRM_GetAllQuotationRemindersDashboard = `
+    EXEC [dbo].[CRM_GetAllQuotationRemindersDashboard]
+`
+export const CRM_GetAllLeadRemindersDashboard = `
+    EXEC [dbo].[CRM_GetAllLeadRemindersDashboard] 
+`

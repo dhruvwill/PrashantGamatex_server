@@ -24,6 +24,8 @@ import { uploadFiles } from "../middleware/uploadFiles";
 import { expensegetdetailsquery, expenseinsertquery } from "../queries/expense";
 import {
   changepassword,
+  CRM_GetAllLeadRemindersDashboard,
+  CRM_GetAllQuotationRemindersDashboard,
   dashboardanalytics,
   getcalender,
 } from "../queries/homepage";
@@ -38,15 +40,16 @@ userRouter.get(
   setDatabaseConnection,
   async (req: Request, res: Response) => {
     try {
-      const [dashboard_data, lead_reminders_data, quotation_reminders_data] =
-        await Promise.all([
-          (req as any).knex.raw(dashboardanalytics, [
-            req.body.user.uid,
-            req.query.timeframe,
-          ]),
-          (req as any).knex.raw(CRM_GetAllLeadReminders),
-          (req as any).knex.raw(CRM_GetAllQuotationReminders),
-        ]);
+      const dashboard_data = await (req as any).knex.raw(dashboardanalytics, [
+        req.body.user.uid,
+        req.query.timeframe,
+      ]);
+      const lead_reminders_data = await (req as any).knex.raw(
+        CRM_GetAllLeadRemindersDashboard
+      );
+      const quotation_reminders_data = await (req as any).knex.raw(
+        CRM_GetAllQuotationRemindersDashboard
+      );
 
       const uid = req.body.user.uid;
 
