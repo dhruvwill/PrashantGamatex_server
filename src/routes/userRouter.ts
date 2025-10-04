@@ -21,6 +21,7 @@ import { expensegetdetailsquery, expenseinsertquery } from "../queries/expense";
 import { changepassword, dashboardanalytics, getcalender } from "../queries/homepage";
 import { FOLLOWUP_IMAGE_BASE_PATH, IMAGE_BASE_PATH } from "../config/constants";
 import checkFilePath from "../middleware/checkFilePath";
+import PDFDocument from "pdfkit";
 
 const userRouter = Router();
 
@@ -220,7 +221,18 @@ userRouter.post(
         )}`;
         const filepath = path.join(IMAGE_BASE_PATH, filename);
 
+        // Save image as before
         fs.writeFileSync(filepath, file.buffer);
+
+        // Save PDF with same base name
+        const pdfFilename = `${req.body.user.uid}_${uniqueSuffix}.pdf`;
+        const pdfFilepath = path.join(IMAGE_BASE_PATH, pdfFilename);
+
+        const doc = new PDFDocument({ autoFirstPage: false });
+        doc.addPage({ size: [500, 700] });
+        doc.image(file.buffer, 0, 0, { fit: [500, 700], align: 'center', valign: 'center' });
+        doc.pipe(fs.createWriteStream(pdfFilepath));
+        doc.end();
 
         return {
           originalname: file.originalname,
