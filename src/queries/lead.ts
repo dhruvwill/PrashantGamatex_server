@@ -1,5 +1,6 @@
 export const leadinsertquery = `
         DECLARE @Output INT;
+        DECLARE @ErrorMessage NVARCHAR(4000);
         EXEC [dbo].[CRM_RefrenceTransactionDetailsInsertUpdateSP_2361]
           @Mode = ?, 
           @CompanyName = ?,
@@ -25,8 +26,9 @@ export const leadinsertquery = `
           @UDF_CustomerExistingMachine_2361 = ?, 
           @UDF_LeadNotes_2361 = ?,
           @UDF_CustomerAdd_2361=?,
-          @Output = @Output OUTPUT;
-        SELECT @Output AS Output;
+          @Output = @Output OUTPUT,
+          @ErrorMessage = @ErrorMessage OUTPUT;
+        SELECT @Output AS Output, @ErrorMessage AS ErrorMessage;
       `;
 
 export const leadupdatequery = `
@@ -70,3 +72,29 @@ export const getleads = `
         EXEC [dbo].[CRM_ReferenceTransactionGetDetails_2361]
         @UserCode = ?
       `;
+
+export const leadFollowupInsertQuery = `
+  DECLARE @Output INT;
+  EXEC [dbo].[CRM_ReferenceTransaction_2361FollowupInsertSP]
+    @ReferenceTransaction_2361Id = ?,
+    @NextVisitDateTime = ?,
+    @FollowupStatus = ?,
+    @FollowupDateTime = ?,
+    @FollowupDetails = ?,
+    @CloseReason = ?,
+    @ModeofContact = ?,
+    @DetailDescription = ?,
+    @VisitTo = ?,
+    @VisitorPerson = ?,
+    @Output = @Output OUTPUT;
+  SELECT @Output AS Output;
+`;
+
+export const CRM_GetAllLeadReminders = `
+  EXEC [dbo].[CRM_GetAllLeadReminders]
+`
+
+export const getleadupdates = `
+  EXEC [dbo].[CRM_GetAllLeadUpdates]
+  @ReferenceTransaction_2361Id = ?
+`;

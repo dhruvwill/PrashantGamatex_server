@@ -53,6 +53,7 @@ export const followupinquiryinsertquery = `
 `;
 export const followupquotationinsertquery = `
         DECLARE @Output int;
+        DECLARE @ErrorMessage NVARCHAR(4000);
         EXEC [dbo].[CRM_SalesFollowupQuotationDetailsInsert]
             @Mode = ?,
             @SalesQuotationId = ?,
@@ -76,7 +77,12 @@ export const followupquotationinsertquery = `
             @Rating = ?,
             @ModeofContact = ?,
             @FollowupStatus = ?,
-            @Output = @Output OUTPUT
+            @Output = @Output OUTPUT,
+            @ErrorMessage = @ErrorMessage OUTPUT;
             
-        SELECT @Output AS Output;
+        SELECT @Output AS Output, @ErrorMessage AS ErrorMessage;
+`;
+
+export const CRM_GetAllQuotationReminders = `
+        EXEC [dbo].[CRM_GetAllQuotationReminders]
 `;

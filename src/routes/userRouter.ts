@@ -7,6 +7,9 @@ import {
   leadinsertquery,
   getuserIdCategoryIdquery,
   getleads,
+  leadFollowupInsertQuery,
+  CRM_GetAllLeadReminders,
+  getleadupdates,
 } from "../queries/lead";
 import {
   getfollowupinquiry,
@@ -15,10 +18,17 @@ import {
   followupquotationinsertquery,
   getUseridCategoryidfollowup,
   getfollowup,
+  CRM_GetAllQuotationReminders,
 } from "../queries/followup";
 import { uploadFiles } from "../middleware/uploadFiles";
 import { expensegetdetailsquery, expenseinsertquery } from "../queries/expense";
-import { changepassword, dashboardanalytics, getcalender } from "../queries/homepage";
+import {
+  changepassword,
+  CRM_GetAllLeadRemindersDashboard,
+  CRM_GetAllQuotationRemindersDashboard,
+  dashboardanalytics,
+  getcalender,
+} from "../queries/homepage";
 import { FOLLOWUP_IMAGE_BASE_PATH, IMAGE_BASE_PATH } from "../config/constants";
 import checkFilePath from "../middleware/checkFilePath";
 import PDFDocument from "pdfkit";
@@ -31,10 +41,28 @@ userRouter.get(
   setDatabaseConnection,
   async (req: Request, res: Response) => {
     try {
-      const data = await (req as any).knex.raw(dashboardanalytics, [
+      const dashboard_data = await (req as any).knex.raw(dashboardanalytics, [
         req.body.user.uid,
         req.query.timeframe,
       ]);
+      const lead_reminders_data = await (req as any).knex.raw(
+        CRM_GetAllLeadRemindersDashboard
+      );
+      const quotation_reminders_data = await (req as any).knex.raw(
+        CRM_GetAllQuotationRemindersDashboard
+      );
+
+      const uid = req.body.user.uid;
+
+      const data = {
+        dashboard: dashboard_data,
+        leadReminders: lead_reminders_data
+          .filter((reminder: any) => reminder.UserCode === uid)
+          .map(({ FcmToken, ...rest }: { FcmToken: string; [key: string]: any }) => rest),
+        quotationReminders: quotation_reminders_data
+          .filter((reminder: any) => reminder.UserCode === uid)
+          .map(({ FcmToken, ...rest }: { FcmToken: string; [key: string]: any }) => rest),
+      };
       res.status(200).json(data);
     } catch (err: any) {
       res.status(500).json({ error: err.message });
@@ -48,7 +76,6 @@ userRouter.get(
   setDatabaseConnection,
   async (req: Request, res: Response) => {
     try {
-      console.log("calenar req received");
       const rawData = await (req as any).knex.raw(getcalender, [
         req.body.user.uid,
       ]);
@@ -84,30 +111,28 @@ userRouter.get(
 );
 
 userRouter.patch(
-  "/password", 
-  authenticateJWT, 
-  setDatabaseConnection, 
+  "/password",
+  authenticateJWT,
+  setDatabaseConnection,
   async (req: Request, res: Response) => {
-    try{
+    try {
       const querydata = req.body;
-      console.log("pass querydata: ", querydata);
-
-      const data = await(req as any).knex.raw(changepassword, [
+      const data = await (req as any).knex.raw(changepassword, [
         req.body.user.uid,
         querydata.currentPassword,
         querydata.newPassword,
       ]);
 
-      if (data[0].Output == 0){
+      if (data[0].Output == 0) {
         return res
           .status(400)
           .json({ error: "Failed to change password. Please try again." });
       }
-      if (data[0].Output == -1){
-        return res.status(400).json({error: "Old password is incorrect"})
+      if (data[0].Output == -1) {
+        return res.status(400).json({ error: "Old password is incorrect" });
       }
-      res.status(200).json(data)
-    }catch(err : any){
+      res.status(200).json(data);
+    } catch (err: any) {
       console.log("Error: ", err);
       res.status(500).json({ error: err.message });
     }
@@ -195,7 +220,9 @@ userRouter.patch(
         params.UDF_CustomerAdd_2361,
       ]);
       if (data[0].Output == 0) {
-        throw new Error("Error while updating lead, Please Try again");
+        throw new Error(
+          data[0].ErrorMessage || "Error while updating lead, Please Try again"
+        );
       }
       res.status(200).json(data);
     } catch (err: any) {
@@ -241,8 +268,6 @@ userRouter.post(
           size: file.size,
         };
       });
-
-      console.log("lead files: ", savedFiles);
 
       const filePaths = savedFiles.map((file) => file.filename).join(",");
 
@@ -309,7 +334,9 @@ userRouter.post(
         params.UDF_CustomerAdd_2361,
       ]);
       if (data[0].Output == 0) {
-        throw new Error("Error while inserting lead, Please Try again");
+        throw new Error(
+          data[0].ErrorMessage || "Error while inserting lead, Please Try again"
+        );
       }
       res.status(200).json(data);
     } catch (err: any) {
@@ -320,67 +347,12 @@ userRouter.post(
 );
 
 userRouter.get(
-  "/images/:filename",
-  authenticateJWT,
-  setDatabaseConnection,
-  checkFilePath,
-  (req: Request, res: Response) => {
-    const company = req.body.user.company;
-    let companyPath;
-    switch (company) {
-      case "PrashantGamatex":
-        companyPath = "//PGPL_Temp//";
-        break;
-      case "Ferber":
-        companyPath = "//PFPL//";
-        break;
-      case "WestPoint":
-        companyPath = "//PWPL//";
-        break;
-      default:
-        companyPath = "//PGPL_Temp//";
-        break;
-    }
-
-
-    const filename = req.params.filename;
-    const filePath = path.join(FOLLOWUP_IMAGE_BASE_PATH, companyPath, filename);
-
-    // Check if file exists
-    fs.access(filePath, fs.constants.F_OK, (err) => {
-      if (err) {
-        console.error(err, filePath);
-        return res.status(404).send("Image not found");
-      }
-
-      // Set appropriate content type
-      const ext = path.extname(filename).toLowerCase();
-      const contentType =
-        {
-          ".png": "image/png",
-          ".jpg": "image/jpeg",
-          ".jpeg": "image/jpeg",
-          ".gif": "image/gif",
-          ".webp": "image/webp",
-        }[ext] || "application/octet-stream";
-
-      res.set("Content-Type", contentType);
-
-      // Stream the file
-      const stream = fs.createReadStream(filePath);
-      stream.pipe(res);
-    });
-  }
-);
-
-userRouter.get(
   "/lead/images/:filename",
   authenticateJWT,
   setDatabaseConnection,
   checkFilePath,
   (req: Request, res: Response) => {
-
-    const filename = "\\"+req.params.filename;
+    const filename = "\\" + req.params.filename;
     const filePath = path.join(IMAGE_BASE_PATH, filename);
 
     // Check if file exists
@@ -407,6 +379,74 @@ userRouter.get(
       const stream = fs.createReadStream(filePath);
       stream.pipe(res);
     });
+  }
+);
+
+userRouter.get(
+  "/lead/updates/:id",
+  authenticateJWT,
+  setDatabaseConnection,
+  async (req: Request, res: Response) => {
+    const data = await (req as any).knex.raw(getleadupdates, [req.params.id]);
+    res.json(data);
+  }
+);
+
+userRouter.post(
+  "/lead/updates/insert",
+  authenticateJWT,
+  setDatabaseConnection,
+  async (req: Request, res: Response) => {
+    try {
+      const querydata = req.body;
+
+      const params = {
+        ReferenceTransactionId: querydata.ReferenceTransactionId,
+        NextVisitDateTime: new Date(querydata.NextVisitDateTime).toISOString(),
+        FollowupStatus: querydata.FollowupStatus,
+        FollowupDetails: querydata.FollowupDetails,
+        FollowupDateTime: new Date(querydata.FollowupDateTime).toISOString(),
+        CloseReason: querydata.CloseReason,
+        ModeOfContact: querydata.ModeOfContact,
+        DetailDescription: querydata.DetailDescription,
+        VisitTo: querydata.VisitTo,
+        VisitorPerson: querydata.VisitorPerson,
+      };
+
+      const data = await (req as any).knex.raw(leadFollowupInsertQuery, [
+        params.ReferenceTransactionId,
+        params.NextVisitDateTime,
+        params.FollowupStatus,
+        params.FollowupDateTime,
+        params.FollowupDetails,
+        params.CloseReason,
+        params.ModeOfContact,
+        params.DetailDescription,
+        params.VisitTo,
+        params.VisitorPerson,
+      ]);
+      if (data[0].Output == 0) {
+        throw new Error("Error while inserting lead updates, Please Try again");
+      }
+      res.status(200).json(data);
+    } catch (err: any) {
+      console.log("Error: ", err);
+      res.status(500).json({ error: err.message });
+    }
+  }
+);
+
+userRouter.get(
+  "/lead/reminders",
+  authenticateJWT,
+  setDatabaseConnection,
+  async (req: Request, res: Response) => {
+    try {
+      const data = await (req as any).knex.raw(CRM_GetAllLeadReminders);
+      res.status(200).json(data);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
   }
 );
 
@@ -616,7 +656,8 @@ userRouter.post(
       ]);
       if (data[0].Output == 0) {
         throw new Error(
-          "Error while inserting quotation followup, Please Try again"
+          data[0].ErrorMessage ||
+            "Error while inserting quotation followup, Please Try again"
         );
       }
       res.status(200).json(data);
@@ -723,6 +764,73 @@ userRouter.post(
     } catch (err: any) {
       res.status(500).json({ error: err.message });
     }
+  }
+);
+
+userRouter.get(
+  "/quotation/reminders",
+  authenticateJWT,
+  setDatabaseConnection,
+  async (req: Request, res: Response) => {
+    try {
+      const data = await (req as any).knex.raw(CRM_GetAllQuotationReminders);
+      res.status(200).json(data);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  }
+);
+
+userRouter.get(
+  "/images/:filename",
+  authenticateJWT,
+  setDatabaseConnection,
+  checkFilePath,
+  (req: Request, res: Response) => {
+    const company = req.body.user.company;
+    let companyPath;
+    switch (company) {
+      case "PrashantGamatex":
+        companyPath = "//PGPL_Temp//";
+        break;
+      case "Ferber":
+        companyPath = "//PFPL//";
+        break;
+      case "WestPoint":
+        companyPath = "//PWPL//";
+        break;
+      default:
+        companyPath = "//PGPL_Temp//";
+        break;
+    }
+
+    const filename = req.params.filename;
+    const filePath = path.join(FOLLOWUP_IMAGE_BASE_PATH, companyPath, filename);
+
+    // Check if file exists
+    fs.access(filePath, fs.constants.F_OK, (err) => {
+      if (err) {
+        console.error(err, filePath);
+        return res.status(404).send("Image not found");
+      }
+
+      // Set appropriate content type
+      const ext = path.extname(filename).toLowerCase();
+      const contentType =
+        {
+          ".png": "image/png",
+          ".jpg": "image/jpeg",
+          ".jpeg": "image/jpeg",
+          ".gif": "image/gif",
+          ".webp": "image/webp",
+        }[ext] || "application/octet-stream";
+
+      res.set("Content-Type", contentType);
+
+      // Stream the file
+      const stream = fs.createReadStream(filePath);
+      stream.pipe(res);
+    });
   }
 );
 
