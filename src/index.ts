@@ -3,7 +3,9 @@ import cors from "cors";
 import authRouter from "./routes/authRouter";
 import userRouter from "./routes/userRouter";
 import constRouter from "./routes/constRouter";
+import utilityRouter from "./routes/utilityRouter";
 import { noCache } from "./middleware/preventCache";
+import { adminSwitchMiddleware } from "./middleware/adminSwitch";
 import multer from "multer";
 import path from "path";
 
@@ -28,11 +30,13 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(noCache);
+app.use(adminSwitchMiddleware);
 
 // routes
 app.use("/auth", authRouter);
 app.use("/user", userRouter);
 app.use("/const", constRouter);
+app.use("/admin", utilityRouter);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Express + TS Server Prasad Group");
