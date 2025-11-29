@@ -3,9 +3,9 @@ export default {
   gamatex: {
     client: "mssql",
     connection: {
-      server: "localhost",
-      user: "CRM",
-      password: "",
+      server: "pgplcrm.c1cwyqmombu9.ap-south-1.rds.amazonaws.com",
+      user: "admin",
+      password: "PGPLCRM1234",
       database: "PGPLCRM",
       options: {
         trustedConnection: true,
@@ -42,9 +42,9 @@ export default {
   ferber: {
     client: "mssql",
     connection: {
-      server: "localhost",
-      user: "CRM",
-      password: "",
+      server: "pgplcrm.c1cwyqmombu9.ap-south-1.rds.amazonaws.com",
+      user: "admin",
+      password: "PGPLCRM1234",
       database: "FerberTest",
       options: {
         trustedConnection: true,
@@ -62,9 +62,9 @@ export default {
   westpoint: {
     client: "mssql",
     connection: {
-      server: "localhost",
-      user: "CRM",
-      password: "",
+      server: "pgplcrm.c1cwyqmombu9.ap-south-1.rds.amazonaws.com",
+      user: "admin",
+      password: "PGPLCRM1234",
       database: "WestPointTest",
       options: {
         trustedConnection: true,
