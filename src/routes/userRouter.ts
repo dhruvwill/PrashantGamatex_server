@@ -32,6 +32,7 @@ import {
 import { FOLLOWUP_IMAGE_BASE_PATH, IMAGE_BASE_PATH } from "../config/constants";
 import checkFilePath from "../middleware/checkFilePath";
 import PDFDocument from "pdfkit";
+import { getLeadQuotationReport } from "../queries/report";
 
 const userRouter = Router();
 
@@ -46,10 +47,10 @@ userRouter.get(
         req.query.timeframe,
       ]);
       const lead_reminders_data = await (req as any).knex.raw(
-        CRM_GetAllLeadRemindersDashboard
+        CRM_GetAllLeadRemindersDashboard,
       );
       const quotation_reminders_data = await (req as any).knex.raw(
-        CRM_GetAllQuotationRemindersDashboard
+        CRM_GetAllQuotationRemindersDashboard,
       );
 
       const uid = req.body.user.uid;
@@ -58,16 +59,22 @@ userRouter.get(
         dashboard: dashboard_data,
         leadReminders: lead_reminders_data
           .filter((reminder: any) => reminder.UserCode === uid)
-          .map(({ FcmToken, ...rest }: { FcmToken: string; [key: string]: any }) => rest),
+          .map(
+            ({ FcmToken, ...rest }: { FcmToken: string; [key: string]: any }) =>
+              rest,
+          ),
         quotationReminders: quotation_reminders_data
           .filter((reminder: any) => reminder.UserCode === uid)
-          .map(({ FcmToken, ...rest }: { FcmToken: string; [key: string]: any }) => rest),
+          .map(
+            ({ FcmToken, ...rest }: { FcmToken: string; [key: string]: any }) =>
+              rest,
+          ),
       };
       res.status(200).json(data);
     } catch (err: any) {
       res.status(500).json({ error: err.message });
     }
-  }
+  },
 );
 
 userRouter.get(
@@ -100,14 +107,14 @@ userRouter.get(
 
           return acc;
         },
-        {}
+        {},
       );
 
       res.status(200).json(formattedData);
     } catch (err: any) {
       res.status(500).json({ error: err.message });
     }
-  }
+  },
 );
 
 userRouter.patch(
@@ -136,7 +143,7 @@ userRouter.patch(
       console.log("Error: ", err);
       res.status(500).json({ error: err.message });
     }
-  }
+  },
 );
 
 userRouter.get(
@@ -146,7 +153,7 @@ userRouter.get(
   async (req: Request, res: Response) => {
     const data = await (req as any).knex.raw(getleads, [req.body.user.uid]);
     res.json(data);
-  }
+  },
 );
 
 userRouter.patch(
@@ -159,7 +166,7 @@ userRouter.patch(
 
       const userId_categoryId_currencyId_data = await (req as any).knex.raw(
         getuserIdCategoryIdquery,
-        [2361, querydata.user.uid, querydata.currency]
+        [2361, querydata.user.uid, querydata.currency],
       );
       const categoryID = userId_categoryId_currencyId_data[0].CategoryID;
       const userID = userId_categoryId_currencyId_data[0].UserID;
@@ -221,7 +228,7 @@ userRouter.patch(
       ]);
       if (data[0].Output == 0) {
         throw new Error(
-          data[0].ErrorMessage || "Error while updating lead, Please Try again"
+          data[0].ErrorMessage || "Error while updating lead, Please Try again",
         );
       }
       res.status(200).json(data);
@@ -229,8 +236,9 @@ userRouter.patch(
       console.log("Error: ", err);
       res.status(500).json({ error: err.message });
     }
-  }
+  },
 );
+
 userRouter.post(
   "/lead/insert",
   uploadFiles,
@@ -244,7 +252,7 @@ userRouter.post(
       const savedFiles = files.map((file) => {
         const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
         const filename = `${req.body.user.uid}_${uniqueSuffix}${path.extname(
-          file.originalname
+          file.originalname,
         )}`;
         const filepath = path.join(IMAGE_BASE_PATH, filename);
 
@@ -257,7 +265,11 @@ userRouter.post(
 
         const doc = new PDFDocument({ autoFirstPage: false });
         doc.addPage({ size: [500, 700] });
-        doc.image(file.buffer, 0, 0, { fit: [500, 700], align: 'center', valign: 'center' });
+        doc.image(file.buffer, 0, 0, {
+          fit: [500, 700],
+          align: "center",
+          valign: "center",
+        });
         doc.pipe(fs.createWriteStream(pdfFilepath));
         doc.end();
 
@@ -273,7 +285,7 @@ userRouter.post(
 
       const userId_categoryId_currencyId_data = await (req as any).knex.raw(
         getuserIdCategoryIdquery,
-        [2361, querydata.user.uid, querydata.currency]
+        [2361, querydata.user.uid, querydata.currency],
       );
       const categoryID = userId_categoryId_currencyId_data[0].CategoryID;
       const userID = userId_categoryId_currencyId_data[0].UserID;
@@ -335,7 +347,8 @@ userRouter.post(
       ]);
       if (data[0].Output == 0) {
         throw new Error(
-          data[0].ErrorMessage || "Error while inserting lead, Please Try again"
+          data[0].ErrorMessage ||
+            "Error while inserting lead, Please Try again",
         );
       }
       res.status(200).json(data);
@@ -343,7 +356,7 @@ userRouter.post(
       console.log("Error: ", err);
       res.status(500).json({ error: err.message });
     }
-  }
+  },
 );
 
 userRouter.get(
@@ -379,7 +392,7 @@ userRouter.get(
       const stream = fs.createReadStream(filePath);
       stream.pipe(res);
     });
-  }
+  },
 );
 
 userRouter.get(
@@ -389,7 +402,7 @@ userRouter.get(
   async (req: Request, res: Response) => {
     const data = await (req as any).knex.raw(getleadupdates, [req.params.id]);
     res.json(data);
-  }
+  },
 );
 
 userRouter.post(
@@ -433,7 +446,7 @@ userRouter.post(
       console.log("Error: ", err);
       res.status(500).json({ error: err.message });
     }
-  }
+  },
 );
 
 userRouter.get(
@@ -447,7 +460,7 @@ userRouter.get(
     } catch (err: any) {
       res.status(500).json({ error: err.message });
     }
-  }
+  },
 );
 
 userRouter.get(
@@ -473,7 +486,7 @@ userRouter.get(
     } catch (err: any) {
       res.status(500).json({ error: err.message });
     }
-  }
+  },
 );
 
 userRouter.get(
@@ -489,7 +502,7 @@ userRouter.get(
     } catch (err: any) {
       res.status(500).json({ error: err.message });
     }
-  }
+  },
 );
 
 userRouter.get(
@@ -505,7 +518,7 @@ userRouter.get(
     } catch (err: any) {
       res.status(500).json({ error: err.message });
     }
-  }
+  },
 );
 
 userRouter.post(
@@ -517,7 +530,7 @@ userRouter.post(
       const querydata = req.body;
       const userId_categoryId = await (req as any).knex.raw(
         getUseridCategoryidfollowup,
-        [querydata.user.uid, 208]
+        [querydata.user.uid, 208],
       );
       const categoryID = userId_categoryId[0].CategoryId;
       const userID = userId_categoryId[0].Userid;
@@ -537,7 +550,7 @@ userRouter.post(
         FollowupDateTime: new Date(querydata.FollowupDateTime).toISOString(),
         // FollowupEndDateTime: querydata.FollowupEndDateTime,
         FollowupEndDateTime: new Date(
-          querydata.FollowupEndDateTime
+          querydata.FollowupEndDateTime,
         ).toISOString(),
         FollowupDetails: querydata.FollowupDetails,
         Visitto: querydata.VisitTo,
@@ -580,15 +593,16 @@ userRouter.post(
       ]);
       if (data[0].Output == 0) {
         throw new Error(
-          "Error while inserting inquiry followup, Please Try again"
+          "Error while inserting inquiry followup, Please Try again",
         );
       }
       res.status(200).json(data);
     } catch (err: any) {
       res.status(500).json({ error: err.message });
     }
-  }
+  },
 );
+
 userRouter.post(
   "/followup/quotation/insert",
   authenticateJWT,
@@ -599,7 +613,7 @@ userRouter.post(
       const mode = "INSERT";
       const userId_categoryId = await (req as any).knex.raw(
         getUseridCategoryidfollowup,
-        [querydata.user.uid, 208]
+        [querydata.user.uid, 208],
       );
       const categoryID = userId_categoryId[0].CategoryId;
       const userID = userId_categoryId[0].Userid;
@@ -614,7 +628,7 @@ userRouter.post(
           .replace("T", " "),
         FollowupDateTime: new Date(querydata.FollowupDateTime).toISOString(),
         FollowupEndDateTime: new Date(
-          querydata.FollowupEndDateTime
+          querydata.FollowupEndDateTime,
         ).toISOString(),
         FollowupDetails: querydata.FollowupDetails,
         Visitto: querydata.VisitTo,
@@ -657,14 +671,14 @@ userRouter.post(
       if (data[0].Output == 0) {
         throw new Error(
           data[0].ErrorMessage ||
-            "Error while inserting quotation followup, Please Try again"
+            "Error while inserting quotation followup, Please Try again",
         );
       }
       res.status(200).json(data);
     } catch (err: any) {
       res.status(500).json({ error: err.message });
     }
-  }
+  },
 );
 
 userRouter.get(
@@ -680,7 +694,7 @@ userRouter.get(
     } catch (err: any) {
       res.status(500).json({ error: err.message });
     }
-  }
+  },
 );
 
 userRouter.post(
@@ -695,22 +709,22 @@ userRouter.post(
       const uploadedFiles = req.files as Express.Multer.File[];
 
       const filePaths: string[] = new Array(querydata.expenseItems.length).fill(
-        ""
+        "",
       );
 
       const savedFiles = uploadedFiles.map((file) => {
         const match = file.fieldname.match(
-          /expenseItems\[(\d+)\]\[attachment\]/
+          /expenseItems\[(\d+)\]\[attachment\]/,
         );
 
         const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
         const filename = `${req.body.user.uid}_${uniqueSuffix}${path.extname(
-          file.originalname
+          file.originalname,
         )}`;
         const filepath = path.join(
           "C:\\Program Files (x86)\\Nutec Infotech Pvt Ltd\\DigitalSignaturePdfFile\\CRM\\EXPENSE",
           // "C:\\CRM\\Expense\\",
-          filename
+          filename,
         );
 
         if (match) {
@@ -764,7 +778,7 @@ userRouter.post(
     } catch (err: any) {
       res.status(500).json({ error: err.message });
     }
-  }
+  },
 );
 
 userRouter.get(
@@ -778,7 +792,7 @@ userRouter.get(
     } catch (err: any) {
       res.status(500).json({ error: err.message });
     }
-  }
+  },
 );
 
 userRouter.get(
@@ -831,7 +845,120 @@ userRouter.get(
       const stream = fs.createReadStream(filePath);
       stream.pipe(res);
     });
-  }
+  },
+);
+
+userRouter.get(
+  "/lead/report",
+  authenticateJWT,
+  setDatabaseConnection,
+  async (req: Request, res: Response) => {
+    try {
+      const {
+        startDate,
+        endDate,
+        userType,
+        representativeName,
+        leadStatus,
+        application,
+        quotationCreated,
+        lastFollowupStartDate,
+        lastFollowupEndDate,
+        communicationBy,
+        activeLeadsOnly,
+      } = req.query;
+
+      const leadsData = await (req as any).knex.raw(getLeadQuotationReport, [
+        req.body.user.uid,
+      ]);
+
+      let filteredData = leadsData;
+
+      // 1. Date Filter
+      if (startDate || endDate) {
+        filteredData = filteredData.filter((lead: any) => {
+          const leadDate = new Date(lead.LeadDate);
+          const start = startDate ? new Date(startDate as string) : null;
+          const end = endDate ? new Date(endDate as string) : null;
+          if (start && end) return leadDate >= start && leadDate <= end;
+          if (start) return leadDate >= start;
+          if (end) return leadDate <= end;
+          return true;
+        });
+      }
+
+      // 2. User Type (Self/Representative/All)
+      if (userType) {
+        if (userType === "Self") {
+          filteredData = filteredData.filter((lead: any) => lead.AccessType === "Self");
+        } else if (userType === "Representative") {
+          filteredData = filteredData.filter((lead: any) => lead.AccessType === "Representative");
+        }
+        // "All" returns all
+      }
+
+      // 3. Representative Name
+      if (representativeName) {
+        filteredData = filteredData.filter((lead: any) =>
+          lead.RepresentativeName === representativeName
+        );
+      }
+
+      // 4. Lead Status (Multi-select)
+      if (leadStatus) {
+        const statuses = Array.isArray(leadStatus) ? leadStatus : [leadStatus];
+        filteredData = filteredData.filter((lead: any) =>
+          statuses.includes(lead.CurrentStatus)
+        );
+      }
+
+      // 5. Application
+      if (application) {
+        filteredData = filteredData.filter((lead: any) =>
+          lead.CustomerApplication === application
+        );
+      }
+
+      // 6. Quotation Created
+      if (quotationCreated) {
+        filteredData = filteredData.filter((lead: any) =>
+          (quotationCreated === "Yes" ? lead.QuotationId != null : lead.QuotationId == null)
+        );
+      }
+
+      // 7/8. Last Follow-up From/To Date
+      if (lastFollowupStartDate || lastFollowupEndDate) {
+        filteredData = filteredData.filter((lead: any) => {
+          const followupDate = lead.LeadFollowupDate ? new Date(lead.LeadFollowupDate) : null;
+          const start = lastFollowupStartDate ? new Date(lastFollowupStartDate as string) : null;
+          const end = lastFollowupEndDate ? new Date(lastFollowupEndDate as string) : null;
+          if (!followupDate) return false;
+          if (start && end) return followupDate >= start && followupDate <= end;
+          if (start) return followupDate >= start;
+          if (end) return followupDate <= end;
+          return true;
+        });
+      }
+
+      // 9. Communication By
+      if (communicationBy) {
+        filteredData = filteredData.filter((lead: any) =>
+          lead.RepresentativeName === communicationBy
+        );
+      }
+
+      // 10. Active Leads Only
+      if (activeLeadsOnly === "true") {
+        filteredData = filteredData.filter((lead: any) =>
+          lead.CurrentStatus !== "Close"
+        );
+      }
+
+      res.status(200).json(filteredData);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  },
 );
 
 export default userRouter;
